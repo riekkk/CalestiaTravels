@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2, Save } from "lucide-react";
 import type { TourPackage } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/form-fields";
 import { StringListEditor } from "@/components/admin/string-list-editor";
@@ -13,9 +14,18 @@ import { FaqEditor } from "@/components/admin/faq-editor";
 
 export type TourFormData = Omit<TourPackage, "id" | "createdAt" | "updatedAt">;
 
+const publishStatusTone = {
+  Active: "success",
+  Draft: "neutral",
+  Archived: "danger",
+} as const;
+
+// New packages default to Active (published) — Draft is an opt-in state for
+// prepping a tour before announcing it, not something admins have to remember
+// to flip.
 const emptyForm: TourFormData = {
   slug: "",
-  publishStatus: "Draft",
+  publishStatus: "Active",
   category: "domestic",
   title: "",
   destinationLabel: "",
@@ -49,16 +59,24 @@ function slugify(value: string) {
 export function TourForm({
   initialData,
   onSubmit,
-  submitLabel = "Save Package",
 }: {
   initialData?: TourFormData;
   onSubmit: (data: TourFormData) => Promise<void>;
-  submitLabel?: string;
 }) {
   const [form, setForm] = useState<TourFormData>(initialData ?? emptyForm);
   const [slugTouched, setSlugTouched] = useState(Boolean(initialData));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  // The button always tells the truth about what clicking it will do, tied
+  // to whatever publish status is currently selected above — never a static
+  // "Save" that leaves the admin guessing whether clients will see this.
+  const submitLabel =
+    form.publishStatus === "Active"
+      ? "Publish"
+      : form.publishStatus === "Draft"
+        ? "Save as Draft"
+        : "Save";
 
   function patch(update: Partial<TourFormData>) {
     setForm((prev) => ({ ...prev, ...update }));
@@ -87,7 +105,25 @@ export function TourForm({
   return (
     <div className="space-y-8">
       <div className="rounded-2xl border border-primary/10 bg-white p-6">
-        <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">Basic Info</h2>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-heading text-lg font-semibold text-primary-dark">Basic Info</h2>
+          <div className="flex items-center gap-2">
+            <Badge tone={publishStatusTone[form.publishStatus]}>{form.publishStatus}</Badge>
+            <Select
+              id="publishStatus"
+              aria-label="Publish status"
+              value={form.publishStatus}
+              onChange={(e) =>
+                patch({ publishStatus: e.target.value as TourFormData["publishStatus"] })
+              }
+              className="w-auto py-2"
+            >
+              <option value="Active">Published</option>
+              <option value="Draft">Draft</option>
+              <option value="Archived">Archived</option>
+            </Select>
+          </div>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="title">Package Name</Label>
@@ -136,20 +172,6 @@ export function TourForm({
             >
               <option value="domestic">Domestic</option>
               <option value="international">International</option>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="publishStatus">Availability Status</Label>
-            <Select
-              id="publishStatus"
-              value={form.publishStatus}
-              onChange={(e) =>
-                patch({ publishStatus: e.target.value as TourFormData["publishStatus"] })
-              }
-            >
-              <option value="Active">Active, visible on the site</option>
-              <option value="Draft">Draft, hidden</option>
-              <option value="Archived">Archived, hidden</option>
             </Select>
           </div>
           <div>

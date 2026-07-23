@@ -83,7 +83,7 @@ export default function EditTourPackagePage({
         Changes go live on the public site immediately once saved.
       </p>
       <div className="mt-8">
-        <TourForm initialData={toFormData(tour)} onSubmit={handleSubmit} submitLabel="Save Changes" />
+        <TourForm initialData={toFormData(tour)} onSubmit={handleSubmit} />
       </div>
     </div>
   );

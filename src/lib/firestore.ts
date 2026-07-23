@@ -585,7 +585,8 @@ function sanitizeTourPackageData<
   const sanitized: Record<string, unknown> = { ...data };
   const defaults: Record<string, unknown> = {
     slug: "",
-    publishStatus: "Draft",
+    // Draft is opt-in (set explicitly on the form), never a silent fallback.
+    publishStatus: "Active",
     category: "domestic",
     title: "",
     destinationLabel: "",

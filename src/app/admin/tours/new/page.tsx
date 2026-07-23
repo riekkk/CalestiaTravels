@@ -23,10 +23,10 @@ export default function NewTourPackagePage() {
         New Tour Package
       </h1>
       <p className="mt-1 text-sm text-ink/55">
-        New packages save as Draft by default. Switch to Active when ready to publish.
+        New packages publish immediately. Switch to Draft above if you&apos;re still prepping it.
       </p>
       <div className="mt-8">
-        <TourForm onSubmit={handleSubmit} submitLabel="Create Package" />
+        <TourForm onSubmit={handleSubmit} />
       </div>
     </div>
   );

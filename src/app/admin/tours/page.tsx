@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2, MapPinned, Plus, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, MapPinned, Plus, Trash2 } from "lucide-react";
 import { useAllTourPackages } from "@/lib/admin-hooks";
-import { deleteTourPackage } from "@/lib/firestore";
+import { deleteTourPackage, updateTourPackage } from "@/lib/firestore";
+import type { TourPackage } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/portal/empty-state";
@@ -20,6 +21,7 @@ const statusTone = {
 export default function AdminToursPage() {
   const { tours, loading } = useAllTourPackages(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   async function handleDelete(id: string, title: string) {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
@@ -28,6 +30,19 @@ export default function AdminToursPage() {
       await deleteTourPackage(id);
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function handleTogglePublish(tour: TourPackage) {
+    const isLive = tour.publishStatus === "Active";
+    if (isLive && !confirm(`Unpublish "${tour.title}"? Clients won't be able to see it anymore.`)) {
+      return;
+    }
+    setTogglingId(tour.id);
+    try {
+      await updateTourPackage(tour.id, { publishStatus: isLive ? "Draft" : "Active" });
+    } finally {
+      setTogglingId(null);
     }
   }
 
@@ -75,6 +90,25 @@ export default function AdminToursPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleTogglePublish(tour)}
+                    disabled={togglingId === tour.id}
+                    className={`flex items-center gap-1.5 text-sm font-medium disabled:opacity-50 ${
+                      tour.publishStatus === "Active"
+                        ? "text-amber-600 hover:text-amber-700"
+                        : "text-emerald-600 hover:text-emerald-700"
+                    }`}
+                  >
+                    {togglingId === tour.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : tour.publishStatus === "Active" ? (
+                      <EyeOff className="h-3.5 w-3.5" />
+                    ) : (
+                      <Eye className="h-3.5 w-3.5" />
+                    )}
+                    {tour.publishStatus === "Active" ? "Unpublish" : "Publish"}
+                  </button>
                   <Link
                     href={`/admin/tours/${tour.id}/edit`}
                     className="text-sm font-medium text-primary hover:text-primary-dark"
