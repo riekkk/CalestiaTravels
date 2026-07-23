@@ -1,6 +1,6 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase-admin";
-import { getAdminAuth } from "@/lib/firebase-admin-auth";
+import { verifyFirebaseIdToken } from "@/lib/firebase-admin-auth";
 
 // Shared by every upload-related API route: verifies the Firebase ID token
 // the client sent in the Authorization header, then checks the matching
@@ -14,12 +14,10 @@ export async function verifyRequestUser(
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!token) return null;
 
-  try {
-    const decoded = await getAdminAuth().verifyIdToken(token);
-    const userDoc = await getAdminDb().collection("users").doc(decoded.uid).get();
-    const isAdmin = userDoc.exists && userDoc.data()?.isAdmin === true;
-    return { uid: decoded.uid, isAdmin };
-  } catch {
-    return null;
-  }
+  const decoded = await verifyFirebaseIdToken(token);
+  if (!decoded) return null;
+
+  const userDoc = await getAdminDb().collection("users").doc(decoded.uid).get();
+  const isAdmin = userDoc.exists && userDoc.data()?.isAdmin === true;
+  return { uid: decoded.uid, isAdmin };
 }
