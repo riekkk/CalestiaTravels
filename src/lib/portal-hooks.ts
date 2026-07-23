@@ -7,11 +7,13 @@ import {
   subscribeToBookings,
   subscribeToDocuments,
   subscribeToNotifications,
+  subscribeToPayments,
 } from "@/lib/firestore";
 import type {
   Booking,
   ClientDocument,
   ClientNotification,
+  Payment,
   VisaApplication,
 } from "@/lib/types";
 
@@ -61,6 +63,22 @@ export function useBookings(userId: string | undefined) {
   }, [userId]);
 
   return { bookings, loading };
+}
+
+export function usePayments(userId: string | undefined) {
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(Boolean(userId) && isFirebaseConfigured);
+
+  useEffect(() => {
+    if (!userId || !isFirebaseConfigured) return;
+    const unsubscribe = subscribeToPayments(userId, (data) => {
+      setPayments(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [userId]);
+
+  return { payments, loading };
 }
 
 export function useNotifications(userId: string | undefined) {

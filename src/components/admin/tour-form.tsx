@@ -147,9 +147,9 @@ export function TourForm({
                 patch({ publishStatus: e.target.value as TourFormData["publishStatus"] })
               }
             >
-              <option value="Active">Active — visible on the site</option>
-              <option value="Draft">Draft — hidden</option>
-              <option value="Archived">Archived — hidden</option>
+              <option value="Active">Active, visible on the site</option>
+              <option value="Draft">Draft, hidden</option>
+              <option value="Archived">Archived, hidden</option>
             </Select>
           </div>
           <div>

@@ -74,7 +74,7 @@ export default function RegisterPage() {
         )}
         {resendState === "error" && (
           <p className="mt-4 text-sm text-red-600">
-            Unable to resend right now — please try again shortly.
+            Unable to resend right now. Please try again shortly.
           </p>
         )}
 

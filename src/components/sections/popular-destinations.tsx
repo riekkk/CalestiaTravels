@@ -18,7 +18,7 @@ export function PopularDestinations() {
       <SectionHeading
         eyebrow="Popular Destinations"
         title="Explore the Philippines with Calestia"
-        description="From waterfalls to white-sand islands — our growing lineup of domestic destinations."
+        description="From waterfalls to white-sand islands, our growing lineup of domestic destinations."
       />
       <div className="grid gap-6 sm:grid-cols-3">
         {tours.slice(0, 3).map((tour, index) => (

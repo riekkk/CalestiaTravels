@@ -74,5 +74,21 @@ service cloud.firestore {
       allow create: if false;
       allow read: if isAdmin();
     }
+
+    // Public reviews (home page + /reviews). Writes go exclusively through
+    // /api/public-submit (reCAPTCHA-verified, Admin SDK) — direct client
+    // writes are denied so a bot can't spam fake reviews straight to
+    // Firestore. Reads are public since the whole point is displaying them.
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
   }
 }

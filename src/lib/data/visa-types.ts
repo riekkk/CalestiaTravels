@@ -3,12 +3,12 @@ import type { DownloadableForm, VisaType } from "@/lib/types";
 export const visaTypes: VisaType[] = [
   {
     slug: "tourist-multiple-entry",
-    title: "Temporary Visitor (Tourism) — Multiple Entry",
+    title: "Temporary Visitor (Tourism): Multiple Entry",
     shortTitle: "Tourist Visa (Multiple Entry)",
     summary:
-      "Visit Japan several times as a temporary visitor for tourism, business, or visiting relatives.",
+      "Visit Japan several times as a temporary visitor for tourism.",
     description:
-      "For applicants who wish to visit Japan several times as a temporary visitor for tourism, business, or visiting relatives. Each stay in Japan must be within 30 days, and applicants must satisfy one of the Embassy's recognized eligibility categories (frequent traveler, business traveler, financial capacity, and more).",
+      "For applicants who wish to visit Japan several times as a temporary visitor for tourism. Each stay in Japan must be within 30 days, and applicants must satisfy one of the Embassy's recognized eligibility categories (frequent traveler, business traveler, financial capacity, and more).",
     notes: [
       "The period of each stay in Japan must be within 30 days.",
       "Applicants must satisfy one of the recognized eligibility categories on the Multiple-Entry Request Form (frequent traveler, regular employee of a qualifying enterprise, cultural/intellectual figure, or spouse/child of a Japanese national holding a long-term visa).",
@@ -76,14 +76,14 @@ export const visaTypes: VisaType[] = [
   },
   {
     slug: "tourist-single-entry",
-    title: "Temporary Visitor Visa — Single Entry (Tourism)",
+    title: "Temporary Visitor Visa: Single Entry (Tourism)",
     shortTitle: "Tourist Visa (Single Entry)",
     summary:
       "For first-time or occasional visitors traveling to Japan for tourism, leisure, or short trips.",
     description:
       "For first-time or occasional visitors traveling to Japan for tourism, leisure, or short trips. This visa allows a single entry into Japan.",
     notes: [
-      "Validity: single entry — the visa may be used for one trip to Japan.",
+      "Validity: single entry. The visa may be used for one trip to Japan.",
       "Duration: each stay in Japan may be up to 90 days.",
     ],
     requiredDocuments: [
@@ -143,7 +143,7 @@ export const visaTypes: VisaType[] = [
   },
   {
     slug: "visiting-relatives",
-    title: "Visiting Relatives — Single Entry",
+    title: "Visiting Relatives: Single Entry",
     shortTitle: "Visiting Relatives (Within 3rd Degree)",
     summary:
       "For visiting relatives residing in Japan within the third degree of relationship.",
@@ -214,7 +214,7 @@ export const visaTypes: VisaType[] = [
   },
   {
     slug: "visiting-friends-distant-relatives",
-    title: "Visiting Friends or Distant Relatives — Single Entry",
+    title: "Visiting Friends or Distant Relatives: Single Entry",
     shortTitle: "Visiting Friends / Distant Relatives",
     summary: "For visiting friends or relatives in Japan beyond the third degree of relationship.",
     description:
@@ -294,7 +294,7 @@ export const visaTypes: VisaType[] = [
     description:
       "To apply for this visa, the Japanese spouse or parent must hold a long-term visa in the Philippines valid for six months or more. This visa is not available if the Japanese spouse/parent is staying in the Philippines only as a temporary visitor.",
     notes: [
-      "Even with a multiple-entry visa, you cannot stay in Japan for more than half of the year in total under 'Temporary Visitor' status — a long-term stay status is required for that.",
+      "Even with a multiple-entry visa, you cannot stay in Japan for more than half of the year in total under 'Temporary Visitor' status. A long-term stay status is required for that.",
     ],
     requiredDocuments: [
       { name: "Passport", detail: "Ensure your passport is self-signed." },
@@ -354,7 +354,7 @@ export const visaTypes: VisaType[] = [
     description:
       "For students, workers, and their dependents who have already obtained a Certificate of Eligibility (COE) from Japan Immigration.",
     notes: [
-      "A photocopy of the Certificate of Eligibility is sufficient — the original is not required.",
+      "A photocopy of the Certificate of Eligibility is sufficient. The original is not required.",
       "If you received your Certificate of Eligibility by email, submit a photocopy of that email.",
     ],
     requiredDocuments: [
@@ -458,8 +458,8 @@ export const applicationGuidelines = [
   {
     title: "Computerized Forms Only",
     points: [
-      "All application forms must be typed (computerized), including Page 2 — Inviter/Guarantor information in Japan — and the date.",
-      "If there is no inviter/guarantor in Japan, type N/A in the relevant fields — do not leave them blank.",
+      "All application forms must be typed (computerized), including Page 2, Inviter/Guarantor information in Japan, and the date.",
+      "If there is no inviter/guarantor in Japan, type N/A in the relevant fields. Do not leave them blank.",
       "Handwritten forms will not be accepted and must be resubmitted in computerized format.",
     ],
   },
@@ -490,7 +490,7 @@ export const applicationGuidelines = [
 export const downloadableForms: DownloadableForm[] = [
   {
     name: "Visa Application Form (Japan)",
-    description: "The standard Japan visa application form — required for every visa type.",
+    description: "The standard Japan visa application form, required for every visa type.",
     fileName: "visa-application-form.pdf",
   },
   {

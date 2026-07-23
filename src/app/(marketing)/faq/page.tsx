@@ -22,7 +22,7 @@ const visaFaqs: AccordionItemData[] = [
   {
     question: "Can I submit a handwritten application form?",
     answer:
-      "No. All application forms must be typed (computerized), including Page 2 — Inviter/Guarantor information — and the date. Handwritten forms will not be accepted and must be resubmitted.",
+      "No. All application forms must be typed (computerized), including Page 2, Inviter/Guarantor information, and the date. Handwritten forms will not be accepted and must be resubmitted.",
   },
   {
     question: "What if I don't have an inviter or guarantor in Japan?",
@@ -31,11 +31,11 @@ const visaFaqs: AccordionItemData[] = [
   {
     question: "What paper size should my documents be printed on?",
     answer:
-      "All forms and authorization letters must be printed on A4-size paper — VFS is strict about paper size compliance.",
+      "All forms and authorization letters must be printed on A4-size paper. VFS is strict about paper size compliance.",
   },
   {
     question: "Can I make corrections on my application form?",
-    answer: "No erasures or corrections are allowed on the application form — a mistake means reprinting it.",
+    answer: "No erasures or corrections are allowed on the application form. A mistake means reprinting it.",
   },
   {
     question: "How many authorization letters do I need to submit?",
@@ -44,7 +44,7 @@ const visaFaqs: AccordionItemData[] = [
   {
     question: "Which visa type should I apply for?",
     answer:
-      "It depends on your purpose of travel — tourism, visiting relatives, visiting friends, being the spouse/child of a Japanese national, or holding student/worker/dependent status. Visit our Visa Assistance page to see the full checklist for each category.",
+      "It depends on your purpose of travel: tourism, visiting relatives, visiting friends, being the spouse/child of a Japanese national, or holding student/worker/dependent status. Visit our Visa Assistance page to see the full checklist for each category.",
   },
 ];
 
@@ -52,17 +52,17 @@ const tourFaqs: AccordionItemData[] = [
   {
     question: "Is airfare included in your tour packages?",
     answer:
-      "It depends on the package — the Dumaguete & Siquijor Getaway includes roundtrip airfare from Manila. Check each package's inclusions list for details.",
+      "It depends on the package. The Dumaguete & Siquijor Getaway includes roundtrip airfare from Manila. Check each package's inclusions list for details.",
   },
   {
     question: "How many people are needed for a departure to push through?",
     answer:
-      "Group sizes vary per package — the Dumaguete & Siquijor Getaway runs with 10–13 guests per departure.",
+      "Group sizes vary per package. The Dumaguete & Siquijor Getaway runs with 10–13 guests per departure.",
   },
   {
     question: "Can I customize an itinerary for my group?",
     answer:
-      "Yes — reach out to our team through the Contact page and we'll work with you on a private or customized itinerary.",
+      "Yes. Reach out to our team through the Contact page and we'll work with you on a private or customized itinerary.",
   },
 ];
 
@@ -70,12 +70,12 @@ const bookingFaqs: AccordionItemData[] = [
   {
     question: "How do I book a tour or start a visa application?",
     answer:
-      "Create a free Client Portal account to submit a visa application or booking request, upload your documents, and track status in one place — or reach out directly via Contact.",
+      "Create a free Client Portal account to submit a visa application or booking request, upload your documents, and track status in one place, or reach out directly via Contact.",
   },
   {
     question: "What payment methods are accepted?",
     answer:
-      "Please confirm current payment options with our team when you book — we'll walk you through it directly.",
+      "Visa assistance fees can be paid via GCash, Maya, or bank transfer directly within the application flow in your Client Portal. For tour package bookings, please confirm current payment options with our team when you book.",
   },
   {
     question: "Is there a cancellation or refund policy?",
@@ -88,12 +88,12 @@ const portalFaqs: AccordionItemData[] = [
   {
     question: "Do I need an account to apply for a visa?",
     answer:
-      "It's recommended — a Client Portal account lets you securely upload documents, track your application status, and receive updates in one place.",
+      "It's recommended. A Client Portal account lets you securely upload documents, track your application status, and receive updates in one place.",
   },
   {
     question: "How do I check my application status?",
     answer:
-      "Log in to your Client Portal dashboard — your applications, uploaded documents, and status updates are all visible there.",
+      "Log in to your Client Portal dashboard. Your applications, uploaded documents, and status updates are all visible there.",
   },
 ];
 

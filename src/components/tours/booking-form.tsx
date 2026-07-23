@@ -32,12 +32,12 @@ export function BookingForm({
     try {
       if (!isFirebaseConfigured) {
         throw new Error(
-          "Online booking isn't connected yet — please call or email us to reserve your slot."
+          "Online booking isn't connected yet. Please call or email us to reserve your slot."
         );
       }
       if (!isRecaptchaConfigured) {
         throw new Error(
-          "Spam protection isn't configured yet — please call or email us to reserve your slot."
+          "Spam protection isn't configured yet. Please call or email us to reserve your slot."
         );
       }
       const name = String(data.get("name") ?? "");

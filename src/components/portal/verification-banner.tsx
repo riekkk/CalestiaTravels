@@ -27,7 +27,7 @@ export function VerificationBanner() {
     <div className="flex flex-col items-start gap-2 bg-amber-50 px-6 py-3 text-sm text-amber-800 sm:flex-row sm:items-center sm:justify-between">
       <span className="flex items-center gap-2">
         <MailWarning className="h-4 w-4 shrink-0" />
-        Please verify your email address ({user.email}) — check your inbox for the link.
+        Please verify your email address ({user.email}). Check your inbox for the link.
       </span>
       <div className="flex items-center gap-3">
         {state === "sent" && (

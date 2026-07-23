@@ -84,7 +84,7 @@ export function ItineraryEditor({
             id={`day-title-${index}`}
             value={day.title}
             onChange={(e) => updateDay(index, { title: e.target.value })}
-            placeholder={`Day ${day.day} — Arrival in Tokyo`}
+            placeholder={`Day ${day.day}: Arrival in Tokyo`}
           />
 
           <div className="mt-4">

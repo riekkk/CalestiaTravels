@@ -83,12 +83,12 @@ export type DownloadableForm = {
   fileName: string;
 };
 
-export type Testimonial = {
+export type Review = {
+  id: string;
   name: string;
-  location: string;
-  quote: string;
   rating: number;
-  service: string;
+  quote: string;
+  createdAt: number;
 };
 
 export type ApplicationStatus =
@@ -122,6 +122,20 @@ export type ApplicationAppointment = {
   notes?: string;
 };
 
+// Collected by the "Apply a Visa" wizard, one set per applicant. Optional so
+// the older single-step application path (visa type + notes only) keeps
+// working without backfilling old documents.
+export type ApplicantDetails = {
+  firstName: string;
+  lastName: string;
+  gender: string;
+  dateOfBirth: string;
+  nationality: string;
+  passportNumber: string;
+  passportExpiry: string;
+  travelDate: string;
+};
+
 export type VisaApplication = {
   id: string;
   userId: string;
@@ -134,6 +148,29 @@ export type VisaApplication = {
   statusHistory: ApplicationStatusEvent[];
   appointment: ApplicationAppointment | null;
   documentChecklist: Record<string, boolean>;
+  // Links every applicant submitted together in one "Apply a Visa" wizard
+  // session, so a single Payment can cover the whole group.
+  groupId?: string;
+  applicant?: ApplicantDetails;
+};
+
+export type PaymentMethod = "GCash" | "Maya" | "Bank Transfer";
+export type PaymentStatus = "Pending" | "Accepted" | "Re-submit Proof of Payment";
+
+export type Payment = {
+  id: string;
+  userId: string;
+  userEmail?: string;
+  groupId: string;
+  visaType: string;
+  applicantCount: number;
+  amount: number;
+  method: PaymentMethod;
+  proofOfPayment: string;
+  proofFileName: string;
+  status: PaymentStatus;
+  createdAt: number;
+  updatedAt: number;
 };
 
 export type ClientDocument = {

@@ -6,12 +6,13 @@ import { Reveal } from "@/components/ui/reveal";
 import { VisaTypeCard } from "@/components/visa/visa-type-card";
 import { ApplicationSteps } from "@/components/visa/application-steps";
 import { DownloadableForms } from "@/components/visa/downloadable-forms";
+import { ApplyVisaButton } from "@/components/portal/apply-visa/apply-visa-button";
 import { visaTypes } from "@/lib/data/visa-types";
 
 export const metadata: Metadata = {
   title: "Visa Assistance",
   description:
-    "Calestia is a Japan visa specialist — explore visa types, requirements, application steps, and downloadable forms.",
+    "Calestia is a Japan visa specialist. Explore visa types, requirements, application steps, and downloadable forms.",
   alternates: { canonical: "/visa" },
 };
 
@@ -24,7 +25,7 @@ const visaFaqs = [
   {
     question: "Do application forms need to be typed?",
     answer:
-      "Yes. All application forms must be typed (computerized), including Page 2 — Inviter/Guarantor information — and the date. Handwritten forms are not accepted.",
+      "Yes. All application forms must be typed (computerized), including Page 2, Inviter/Guarantor information, and the date. Handwritten forms are not accepted.",
   },
   {
     question: "How many authorization letters should I prepare?",
@@ -33,7 +34,7 @@ const visaFaqs = [
   {
     question: "What paper size is required?",
     answer:
-      "All forms and letters must be printed on A4-size paper — VFS strictly enforces this requirement.",
+      "All forms and letters must be printed on A4-size paper. VFS strictly enforces this requirement.",
   },
 ];
 
@@ -50,13 +51,11 @@ export default function VisaAssistancePage() {
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/75">
             Calestia specializes exclusively in Japan visa processing. Every
-            checklist below is built directly around Embassy requirements —
+            checklist below is built directly around Embassy requirements,
             so you know exactly what to prepare before you file.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <ButtonLink href="/portal/applications/new" size="lg">
-              Apply Now
-            </ButtonLink>
+            <ApplyVisaButton size="lg">Apply Now</ApplyVisaButton>
             <ButtonLink href="/contact" variant="outline" size="lg">
               Talk to Our Team
             </ButtonLink>
@@ -115,7 +114,7 @@ export default function VisaAssistancePage() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <ButtonLink href="/portal/register" size="lg">
-              Apply Now
+              Create Free Account
             </ButtonLink>
           </div>
         </div>

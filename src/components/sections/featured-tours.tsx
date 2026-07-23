@@ -16,7 +16,7 @@ export function FeaturedTours() {
       <SectionHeading
         eyebrow="Tour Packages"
         title="Featured Getaways"
-        description="Handpicked domestic itineraries, planned down to the last ferry ride — with more destinations added regularly."
+        description="Handpicked domestic itineraries, planned down to the last ferry ride, with more destinations added regularly."
       />
 
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

@@ -39,7 +39,7 @@ export function FileUpload({
       <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/15 bg-bg-light px-6 py-10 text-center">
         <Clock className="h-6 w-6 text-primary/50" strokeWidth={1.5} />
         <p className="text-sm font-medium text-primary-dark/70">
-          Document Uploads — Coming Soon
+          Document Uploads: Coming Soon
         </p>
         <p className="text-xs text-ink/45">
           We&apos;re finishing setup on secure file storage. In the meantime,
@@ -83,7 +83,7 @@ export function FileUpload({
         <p className="text-sm font-medium text-primary-dark">
           {uploading ? "Uploading..." : "Drag & drop a file, or click to browse"}
         </p>
-        <p className="text-xs text-ink/45">PDF, JPG, or PNG — max 10MB</p>
+        <p className="text-xs text-ink/45">PDF, JPG, or PNG, max 10MB</p>
         <input
           ref={inputRef}
           type="file"

@@ -12,7 +12,7 @@ import {
 import { StatCard } from "@/components/portal/stat-card";
 import { ApplicationStatusBadge } from "@/components/portal/status-badge";
 import { EmptyState } from "@/components/portal/empty-state";
-import { ButtonLink } from "@/components/ui/button";
+import { ApplyVisaButton } from "@/components/portal/apply-visa/apply-visa-button";
 import { formatDate } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -38,7 +38,7 @@ export default function DashboardPage() {
             Here&apos;s a snapshot of your applications and bookings.
           </p>
         </div>
-        <ButtonLink href="/portal/applications/new">New Visa Application</ButtonLink>
+        <ApplyVisaButton>New Visa Application</ApplyVisaButton>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -63,7 +63,7 @@ export default function DashboardPage() {
               icon={FileStack}
               title="No applications yet"
               description="Start a Japan visa application and track its status here."
-              action={<ButtonLink href="/portal/applications/new" size="sm">Start Application</ButtonLink>}
+              action={<ApplyVisaButton size="sm">Start Application</ApplyVisaButton>}
             />
           ) : (
             <div className="space-y-3">

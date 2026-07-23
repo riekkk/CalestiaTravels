@@ -13,14 +13,11 @@ export function Hero() {
       />
       <div className="container-page relative py-24 sm:py-28 lg:py-36">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-white/80">
-            Japan Visa Specialists · General Trias, Cavite
-          </p>
           <h1 className="font-heading text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
             Where Every Japan Journey Begins
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
-            We simplify the Japanese visa application process — guiding you
+            We simplify the Japanese visa application process, guiding you
             every step of the way with expert assistance, accurate
             documentation, and a stress-free experience.
           </p>

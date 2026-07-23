@@ -17,7 +17,7 @@ export default function ToursPage() {
         <SectionHeading
           eyebrow="Tour Packages"
           title="Where Would You Like to Go?"
-          description="Curated getaways across the Philippines, planned down to the last detail — with international destinations on the way."
+          description="Curated getaways across the Philippines, planned down to the last detail, with international destinations on the way."
         />
         <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
           <Link
@@ -32,7 +32,7 @@ export default function ToursPage() {
                 Domestic Tours
               </p>
               <p className="text-sm text-ink/60">
-                Dumaguete & Siquijor, Bohol, Cebu, and more.
+                Dumaguete & Siquijor, with more destinations on the way.
               </p>
             </div>
           </Link>

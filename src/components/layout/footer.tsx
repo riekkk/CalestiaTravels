@@ -117,6 +117,9 @@ export function Footer() {
             <Link href="/terms" className="hover:text-white">
               Terms of Service
             </Link>
+            <span aria-hidden="true" className="text-white/30">
+              |
+            </span>
             <Link href="/privacy" className="hover:text-white">
               Privacy Policy
             </Link>

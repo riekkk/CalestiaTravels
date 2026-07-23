@@ -20,6 +20,7 @@ import {
 } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import type {
+  ApplicantDetails,
   ApplicationAppointment,
   ApplicationStatus,
   Booking,
@@ -27,6 +28,10 @@ import type {
   ClientDocument,
   ClientNotification,
   ClientProfile,
+  Payment,
+  PaymentMethod,
+  PaymentStatus,
+  Review,
   TourPackage,
   VisaApplication,
 } from "@/lib/types";
@@ -58,6 +63,8 @@ function mapApplication(id: string, data: Record<string, unknown>): VisaApplicat
       : [],
     appointment: (data.appointment as ApplicationAppointment | null) ?? null,
     documentChecklist: (data.documentChecklist as Record<string, boolean>) ?? {},
+    groupId: data.groupId as string | undefined,
+    applicant: data.applicant as ApplicantDetails | undefined,
   };
 }
 
@@ -151,6 +158,37 @@ export async function createApplication(
     submittedAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
+}
+
+// Creates one VisaApplication per applicant from the "Apply a Visa" wizard,
+// all sharing a freshly generated groupId so a single Payment can cover the
+// whole batch. Reuses the exact same tracker/status/appointment/checklist
+// infrastructure as the original single-applicant flow.
+export async function createApplicationGroup(
+  userId: string,
+  userEmail: string,
+  applicants: { visaType: string; applicant: ApplicantDetails }[]
+): Promise<string> {
+  const groupId = doc(collection(requireDb(), "applications")).id;
+  await Promise.all(
+    applicants.map(({ visaType, applicant }) =>
+      addDoc(collection(requireDb(), "applications"), {
+        userId,
+        userEmail,
+        visaType,
+        applicant,
+        groupId,
+        status: "Submitted" satisfies ApplicationStatus,
+        notes: "",
+        statusHistory: [{ status: "Submitted" satisfies ApplicationStatus, timestamp: Date.now() }],
+        appointment: null,
+        documentChecklist: {},
+        submittedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    )
+  );
+  return groupId;
 }
 
 // Admin-driven status change. Appends to statusHistory (client-side
@@ -366,6 +404,109 @@ export async function updateClientProfile(
   await updateDoc(doc(requireDb(), "users", userId), data);
 }
 
+function mapPayment(id: string, data: Record<string, unknown>): Payment {
+  return {
+    id,
+    userId: data.userId as string,
+    userEmail: data.userEmail as string | undefined,
+    groupId: data.groupId as string,
+    visaType: data.visaType as string,
+    applicantCount: (data.applicantCount as number) ?? 1,
+    amount: (data.amount as number) ?? 0,
+    method: data.method as PaymentMethod,
+    proofOfPayment: (data.proofOfPayment as string) ?? "",
+    proofFileName: (data.proofFileName as string) ?? "",
+    status: (data.status as PaymentStatus) ?? "Pending",
+    createdAt: toMillis(data.createdAt),
+    updatedAt: toMillis(data.updatedAt),
+  };
+}
+
+export function subscribeToPayments(
+  userId: string,
+  callback: (payments: Payment[]) => void
+) {
+  const q = query(
+    collection(requireDb(), "payments"),
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc")
+  );
+  return onSnapshot(q, (snapshot) => {
+    callback(snapshot.docs.map((docSnap) => mapPayment(docSnap.id, docSnap.data())));
+  });
+}
+
+export function subscribeToAllPayments(callback: (payments: Payment[]) => void) {
+  const q = query(collection(requireDb(), "payments"), orderBy("createdAt", "desc"));
+  return onSnapshot(q, (snapshot) => {
+    callback(snapshot.docs.map((docSnap) => mapPayment(docSnap.id, docSnap.data())));
+  });
+}
+
+export async function createPayment(data: {
+  userId: string;
+  userEmail: string;
+  groupId: string;
+  visaType: string;
+  applicantCount: number;
+  amount: number;
+  method: PaymentMethod;
+  proofOfPayment: string;
+  proofFileName: string;
+}): Promise<string> {
+  const ref = await addDoc(collection(requireDb(), "payments"), {
+    ...data,
+    status: "Pending" satisfies PaymentStatus,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+// Admin-driven status change (Pending / Accepted / Re-submit Proof of
+// Payment). Notifies the client the same way application status changes do.
+export async function updatePaymentStatus(
+  paymentId: string,
+  userId: string,
+  status: PaymentStatus
+) {
+  await updateDoc(doc(requireDb(), "payments", paymentId), {
+    status,
+    updatedAt: serverTimestamp(),
+  });
+  const message =
+    status === "Accepted"
+      ? "Your payment has been verified. Our visa specialists will review your application shortly."
+      : status === "Re-submit Proof of Payment"
+        ? "We couldn't verify your proof of payment. Please re-submit it from your Payments page."
+        : "Your payment is pending review.";
+  await sendNotificationToUser(userId, message);
+}
+
+function mapReview(id: string, data: Record<string, unknown>): Review {
+  return {
+    id,
+    name: data.name as string,
+    rating: (data.rating as number) ?? 5,
+    quote: data.quote as string,
+    createdAt: toMillis(data.createdAt),
+  };
+}
+
+export function subscribeToReviews(callback: (reviews: Review[]) => void) {
+  const q = query(collection(requireDb(), "reviews"), orderBy("createdAt", "desc"));
+  return onSnapshot(q, (snapshot) => {
+    callback(snapshot.docs.map((docSnap) => mapReview(docSnap.id, docSnap.data())));
+  });
+}
+
+export async function submitReview(
+  data: { name: string; rating: number; quote: string },
+  recaptchaToken: string
+) {
+  await postPublicSubmission({ type: "review", recaptchaToken, data });
+}
+
 function mapTourPackage(id: string, data: Record<string, unknown>): TourPackage {
   return {
     id,
@@ -457,7 +598,7 @@ async function postPublicSubmission(body: unknown) {
   });
   if (!res.ok) {
     const payload = await res.json().catch(() => ({}));
-    throw new Error(payload.error || "Unable to submit — please try again.");
+    throw new Error(payload.error || "Unable to submit. Please try again.");
   }
 }
 

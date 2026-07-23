@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { getVisaTypeBySlug, multipleEntryCategories, visaTypes } from "@/lib/data/visa-types";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { RequirementChecklist } from "@/components/visa/requirement-checklist";
+import { ApplyVisaButton } from "@/components/portal/apply-visa/apply-visa-button";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -114,9 +114,9 @@ export default async function VisaTypeDetailPage({ params }: Props) {
                     Start your application through the Client Portal and
                     upload your documents securely.
                   </p>
-                  <ButtonLink href="/portal/applications/new" variant="outline" className="mt-4 w-full">
+                  <ApplyVisaButton variant="outline" className="mt-4 w-full">
                     Apply Now
-                  </ButtonLink>
+                  </ApplyVisaButton>
                 </div>
               </div>
             </Reveal>

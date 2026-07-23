@@ -18,7 +18,7 @@ const sections: LegalSection[] = [
   {
     heading: "Services",
     body: [
-      "Calestia Travel & Tours provides Japan visa processing assistance, tour packages, and travel-related services. We act as an authorized travel agent and visa application facilitator — we do not guarantee visa approval, as final decisions rest solely with the Embassy of Japan and VFS Global.",
+      "Calestia Travel & Tours provides Japan visa processing assistance, tour packages, and travel-related services. We act as an authorized travel agent and visa application facilitator, and we do not guarantee visa approval, as final decisions rest solely with the Embassy of Japan and VFS Global.",
     ],
   },
   {
@@ -65,6 +65,6 @@ const sections: LegalSection[] = [
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Terms of Service — Calestia Travel & Tours" lastUpdated="July 2026" sections={sections} />
+    <LegalPage title="Terms of Service | Calestia Travel & Tours" lastUpdated="July 2026" sections={sections} />
   );
 }

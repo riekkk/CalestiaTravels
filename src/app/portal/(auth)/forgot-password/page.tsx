@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
       // configuration problem (e.g. Firebase not connected), not
       // "user not found" or similar, which would leak account existence.
       if (!isFirebaseConfigured) {
-        setConfigError("Password reset isn't connected yet — please contact us directly.");
+        setConfigError("Password reset isn't connected yet. Please contact us directly.");
         setLoading(false);
         return;
       }

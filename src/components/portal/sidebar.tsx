@@ -10,9 +10,11 @@ import {
   FileStack,
   LayoutDashboard,
   LogOut,
+  MapPinned,
   Menu,
   ShieldCheck,
   User,
+  Wallet,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,6 +27,8 @@ const links = [
   { href: "/portal/applications", label: "Applications", icon: FileStack },
   { href: "/portal/documents", label: "Documents", icon: FileStack },
   { href: "/portal/bookings", label: "Bookings", icon: CalendarDays },
+  { href: "/portal/tours", label: "Tour Packages", icon: MapPinned },
+  { href: "/portal/payments", label: "Payments", icon: Wallet },
   { href: "/portal/notifications", label: "Notifications", icon: Bell },
   { href: "/portal/profile", label: "Profile", icon: User },
 ];
@@ -66,9 +70,14 @@ export function PortalSidebar() {
           collapsed ? "lg:w-20" : "lg:w-64"
         )}
       >
-        <div className="flex items-center justify-between gap-3 px-6 py-6">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <BrandMark size={40} onDark className="shrink-0" />
+        <div
+          className={cn(
+            "flex items-center gap-3 px-6 py-6",
+            collapsed ? "lg:justify-center lg:px-3" : "justify-between"
+          )}
+        >
+          <div className="flex min-w-0 items-center gap-3 overflow-hidden">
+            <BrandMark size={collapsed ? 32 : 40} onDark className="shrink-0" />
             <p className={cn("whitespace-nowrap text-xs text-white/50", collapsed && "lg:hidden")}>
               Client Portal
             </p>

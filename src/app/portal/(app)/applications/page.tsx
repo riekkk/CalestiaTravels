@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useApplications } from "@/lib/portal-hooks";
 import { ApplicationStatusBadge } from "@/components/portal/status-badge";
 import { EmptyState } from "@/components/portal/empty-state";
-import { ButtonLink } from "@/components/ui/button";
+import { ApplyVisaButton } from "@/components/portal/apply-visa/apply-visa-button";
 import { formatDate } from "@/lib/utils";
 
 export default function ApplicationsPage() {
@@ -24,7 +24,7 @@ export default function ApplicationsPage() {
             Track the status of every visa application you&apos;ve submitted.
           </p>
         </div>
-        <ButtonLink href="/portal/applications/new">New Application</ButtonLink>
+        <ApplyVisaButton>New Application</ApplyVisaButton>
       </div>
 
       {!loading && applications.length === 0 ? (
@@ -32,7 +32,7 @@ export default function ApplicationsPage() {
           icon={FileStack}
           title="No applications yet"
           description="Start a Japan visa application and we'll walk you through the required documents."
-          action={<ButtonLink href="/portal/applications/new" size="sm">Start Application</ButtonLink>}
+          action={<ApplyVisaButton size="sm">Start Application</ApplyVisaButton>}
         />
       ) : (
         <div className="space-y-3">

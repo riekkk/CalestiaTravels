@@ -14,7 +14,7 @@ export const SITE_INFO = {
 export const SITE_URL = "https://calestiatravels.vercel.app";
 export const SITE_NAME = "Calestia Travel and Tours";
 export const SITE_DESCRIPTION =
-  "Calestia Travel and Tours — Japan visa assistance, tour packages, and travel services based in General Trias, Cavite, Philippines.";
+  "Calestia Travel and Tours: Japan visa assistance, tour packages, and travel services based in General Trias, Cavite, Philippines.";
 export const SITE_KEYWORDS = [
   "Japan visa Philippines",
   "Japan visa General Trias Cavite",

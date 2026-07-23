@@ -6,6 +6,7 @@ import {
   subscribeToAllApplications,
   subscribeToAllBookings,
   subscribeToAllDocuments,
+  subscribeToAllPayments,
   subscribeToAllTourPackages,
   subscribeToAllUsers,
 } from "@/lib/firestore";
@@ -13,6 +14,7 @@ import type {
   Booking,
   ClientDocument,
   ClientProfile,
+  Payment,
   TourPackage,
   VisaApplication,
 } from "@/lib/types";
@@ -63,6 +65,22 @@ export function useAllBookings(enabled: boolean) {
   }, [enabled]);
 
   return { bookings, loading };
+}
+
+export function useAllPayments(enabled: boolean) {
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(enabled && isFirebaseConfigured);
+
+  useEffect(() => {
+    if (!enabled || !isFirebaseConfigured) return;
+    const unsubscribe = subscribeToAllPayments((data) => {
+      setPayments(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [enabled]);
+
+  return { payments, loading };
 }
 
 export function useAllUsers(enabled: boolean) {

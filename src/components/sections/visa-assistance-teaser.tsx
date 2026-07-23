@@ -2,11 +2,12 @@ import { CheckCircle2 } from "lucide-react";
 import { Section } from "@/components/ui/section";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
+import { ApplyVisaButton } from "@/components/portal/apply-visa/apply-visa-button";
 import { visaTypes } from "@/lib/data/visa-types";
 
 const points = [
   "Document review against the exact Embassy checklist for your visa type",
-  "Computerized, error-free forms — no handwritten resubmissions",
+  "Computerized, error-free forms, no handwritten resubmissions",
   "Average 5–7 working day processing once filed",
 ];
 
@@ -24,8 +25,8 @@ export function VisaAssistanceTeaser() {
             </h2>
             <p className="mt-4 text-base leading-relaxed text-ink/70">
               As a dedicated Japan visa specialist, Calestia guides you through
-              every category — from tourism to visiting relatives, students,
-              workers, and dependents — with a document checklist built
+              every category, from tourism to visiting relatives, students,
+              workers, and dependents, with a document checklist built
               directly around Embassy requirements.
             </p>
             <ul className="mt-6 space-y-3">
@@ -38,9 +39,7 @@ export function VisaAssistanceTeaser() {
             </ul>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href="/visa">Explore Visa Assistance</ButtonLink>
-              <ButtonLink href="/portal/applications/new" variant="secondary">
-                Apply Now
-              </ButtonLink>
+              <ApplyVisaButton variant="secondary">Apply Now</ApplyVisaButton>
             </div>
           </div>
         </Reveal>

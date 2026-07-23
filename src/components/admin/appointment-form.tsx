@@ -86,7 +86,7 @@ export function AppointmentForm({
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {appointment ? "Update Appointment" : "Schedule Appointment"}
         </Button>
-        {saved && <span className="text-xs text-emerald-600">Saved — client notified</span>}
+        {saved && <span className="text-xs text-emerald-600">Saved, client notified</span>}
       </div>
     </form>
   );

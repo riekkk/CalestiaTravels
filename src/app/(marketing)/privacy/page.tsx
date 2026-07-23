@@ -79,6 +79,6 @@ const sections: LegalSection[] = [
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Privacy Policy — Calestia Travel & Tours" lastUpdated="July 2026" sections={sections} />
+    <LegalPage title="Privacy Policy | Calestia Travel & Tours" lastUpdated="July 2026" sections={sections} />
   );
 }

@@ -7,7 +7,7 @@ import { Reveal } from "@/components/ui/reveal";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Calestia Travel and Tours' philosophy, mission, and vision — a family-backed Japan visa specialist built on precision and compliance.",
+    "Calestia Travel and Tours' philosophy, mission, and vision: a family-backed Japan visa specialist built on precision and compliance.",
   alternates: { canonical: "/about" },
 };
 
@@ -26,7 +26,7 @@ export default function AboutPage() {
             Calestia Travel & Tours is a Japan visa specialist based in
             General Trias, Cavite. We handle the paperwork, the checklist,
             and the follow-through so your trip starts with a lot less
-            stress — from your first inquiry to the day your passport comes
+            stress, from your first inquiry to the day your passport comes
             back with your visa inside.
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function AboutPage() {
                   &ldquo;Precision Architecture in Travel Governance.&rdquo;
                 </span>{" "}
                 We treat international travel as more than a financial
-                transaction — it&apos;s a significant process encompassing
+                transaction. It&apos;s a significant process encompassing
                 compliance with all regulations. To us, travel starts with a
                 proper understanding and processing of information, ensuring
                 compliance, and protecting the safety and security of your
@@ -79,7 +79,7 @@ export default function AboutPage() {
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-ink/70">
                 To become a premier, highly trusted gateway for international
-                travel and global documentation — recognized nationwide for
+                travel and global documentation, recognized nationwide for
                 absolute precision, premium service, and, as we grow, full
                 Department of Tourism (DOT) accreditation.
               </p>
@@ -116,7 +116,7 @@ export default function AboutPage() {
           </h3>
           <p className="mt-3 text-sm leading-relaxed text-ink/65">
             Every application is reviewed with the same discipline as a
-            compliance audit — and the same warmth of a family business that
+            compliance audit, and the same warmth of a family business that
             genuinely wants to see you off on a great trip.
           </p>
         </div>

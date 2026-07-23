@@ -43,7 +43,7 @@ export function ApplicationTimeline({ application }: { application: VisaApplicat
         <div className="mb-6 flex items-start gap-3 rounded-xl bg-amber-50 p-4 text-amber-800">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <p className="text-sm">
-            Action needed — we require additional documents before your application can
+            Action needed. We require additional documents before your application can
             continue. Check the notes below or your recent notifications for details.
           </p>
         </div>

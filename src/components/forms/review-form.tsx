@@ -1,19 +1,21 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/form-fields";
 import { isFirebaseConfigured } from "@/lib/firebase";
-import { submitInquiry } from "@/lib/firestore";
-import { sendFormEmails } from "@/lib/email";
+import { submitReview } from "@/lib/firestore";
 import { getRecaptchaToken, isRecaptchaConfigured } from "@/lib/recaptcha";
+import { cn } from "@/lib/utils";
 
-export function ContactForm() {
+export function ReviewForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
   );
   const [error, setError] = useState("");
+  const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,7 +28,7 @@ export function ContactForm() {
     try {
       if (!isFirebaseConfigured) {
         throw new Error(
-          "Online form submission isn't connected yet. Please reach us by phone or email in the meantime."
+          "Online review submission isn't connected yet. Please reach us by phone or email in the meantime."
         );
       }
       if (!isRecaptchaConfigured) {
@@ -35,24 +37,14 @@ export function ContactForm() {
         );
       }
       const name = String(data.get("name") ?? "");
-      const email = String(data.get("email") ?? "");
-      const phone = String(data.get("phone") ?? "");
-      const message = String(data.get("message") ?? "");
+      const quote = String(data.get("quote") ?? "");
 
-      const recaptchaToken = await getRecaptchaToken("contact_form");
-      await submitInquiry({ name, email, phone, message }, recaptchaToken);
-
-      sendFormEmails({
-        formType: "Contact Inquiry",
-        clientName: name,
-        clientEmail: email,
-        clientPhone: phone,
-        details: message,
-        nextSteps: "Our team will review your message and get back to you shortly.",
-      }).catch((err) => console.error("EmailJS send failed:", err));
+      const recaptchaToken = await getRecaptchaToken("review_form");
+      await submitReview({ name, rating, quote }, recaptchaToken);
 
       setStatus("success");
       form.reset();
+      setRating(5);
     } catch (err) {
       setStatus("error");
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -63,10 +55,10 @@ export function ContactForm() {
     return (
       <div className="rounded-2xl border border-primary/10 bg-bg-light p-8 text-center">
         <p className="font-heading text-lg font-semibold text-primary-dark">
-          Message sent!
+          Thank you for your review!
         </p>
         <p className="mt-2 text-sm text-ink/65">
-          Thank you for reaching out. Our team will get back to you shortly.
+          We appreciate you taking the time to share your experience.
         </p>
       </div>
     );
@@ -74,28 +66,44 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="name">Full Name</Label>
-          <Input id="name" name="name" required placeholder="Juan Dela Cruz" />
-        </div>
-        <div>
-          <Label htmlFor="phone">Phone Number</Label>
-          <Input id="phone" name="phone" required placeholder="09XX XXX XXXX" />
+      <div>
+        <Label htmlFor="review-name">Name</Label>
+        <Input id="review-name" name="name" required placeholder="Juan Dela Cruz" maxLength={100} />
+      </div>
+      <div>
+        <Label htmlFor="review-rating">Rating</Label>
+        <div id="review-rating" className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setRating(value)}
+              onMouseEnter={() => setHoverRating(value)}
+              onMouseLeave={() => setHoverRating(0)}
+              aria-label={`${value} star${value === 1 ? "" : "s"}`}
+              className="p-0.5"
+            >
+              <Star
+                className={cn(
+                  "h-6 w-6 transition-colors",
+                  value <= (hoverRating || rating)
+                    ? "fill-primary text-primary"
+                    : "text-primary/20"
+                )}
+              />
+            </button>
+          ))}
         </div>
       </div>
       <div>
-        <Label htmlFor="email">Email Address</Label>
-        <Input id="email" name="email" type="email" required placeholder="you@email.com" />
-      </div>
-      <div>
-        <Label htmlFor="message">Message</Label>
+        <Label htmlFor="review-quote">Your Review</Label>
         <Textarea
-          id="message"
-          name="message"
+          id="review-quote"
+          name="quote"
           required
-          rows={5}
-          placeholder="Tell us about your trip or visa application..."
+          rows={4}
+          maxLength={1000}
+          placeholder="Tell us about your experience with Calestia..."
         />
       </div>
       {status === "error" && <p className="text-sm text-red-600">{error}</p>}
@@ -105,7 +113,7 @@ export function ContactForm() {
         ) : (
           <Send className="h-4 w-4" />
         )}
-        Send Message
+        Submit Review
       </Button>
       <p className="text-xs text-ink/40">
         This site is protected by reCAPTCHA and the Google{" "}

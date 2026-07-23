@@ -14,7 +14,7 @@ const reasons = [
     icon: Sparkles,
     title: "Specialized in Japan",
     description:
-      "We know Japan visa requirements inside out — no guesswork, no delays, no surprises.",
+      "We know Japan visa requirements inside out. No guesswork, no delays, no surprises.",
   },
   {
     icon: PlaneTakeoff,
@@ -26,7 +26,7 @@ const reasons = [
     icon: Headset,
     title: "Dedicated Support",
     description:
-      "Personal assistance via chat, email, or call — a real human answers your questions.",
+      "Personal assistance via chat, email, or call. A real human answers your questions.",
   },
   {
     icon: Lock,
@@ -54,7 +54,7 @@ export function WhyChooseCalestia() {
       <SectionHeading
         eyebrow="Why Calestia"
         title="Why Choose Calestia"
-        description="A family-backed team with an institutional level of rigor — precise, transparent, and genuinely reachable."
+        description="A family-backed team with an institutional level of rigor: precise, transparent, and genuinely reachable."
       />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {reasons.map((reason, index) => (

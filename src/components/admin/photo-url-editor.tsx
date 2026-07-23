@@ -50,7 +50,7 @@ export function PhotoUrlEditor({
       <div className="mb-2 flex items-center justify-between">
         <p className="text-sm font-medium text-primary-dark">Photos</p>
         <span className="flex items-center gap-1 text-xs text-amber-700">
-          <ImageOff className="h-3.5 w-3.5" /> File upload coming soon — paste image URLs for now
+          <ImageOff className="h-3.5 w-3.5" /> File upload coming soon, paste image URLs for now
         </span>
       </div>
       <div className="space-y-2">

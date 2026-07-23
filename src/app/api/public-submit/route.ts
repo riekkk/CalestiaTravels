@@ -22,9 +22,16 @@ type BookingLeadData = {
   message?: string;
 };
 
+type ReviewData = {
+  name: string;
+  rating: number;
+  quote: string;
+};
+
 type RequestBody =
   | { type: "inquiry"; recaptchaToken: string; data: InquiryData }
-  | { type: "bookingLead"; recaptchaToken: string; data: BookingLeadData };
+  | { type: "bookingLead"; recaptchaToken: string; data: BookingLeadData }
+  | { type: "review"; recaptchaToken: string; data: ReviewData };
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -52,6 +59,21 @@ function validateBookingLead(data: unknown): data is BookingLeadData {
     isNonEmptyString(d.packageName) &&
     isNonEmptyString(d.travelDate) &&
     typeof d.pax === "number"
+  );
+}
+
+function validateReview(data: unknown): data is ReviewData {
+  if (!data || typeof data !== "object") return false;
+  const d = data as Record<string, unknown>;
+  return (
+    isNonEmptyString(d.name) &&
+    isNonEmptyString(d.quote) &&
+    d.name.length <= 100 &&
+    d.quote.length <= 1000 &&
+    typeof d.rating === "number" &&
+    Number.isInteger(d.rating) &&
+    d.rating >= 1 &&
+    d.rating <= 5
   );
 }
 
@@ -121,6 +143,17 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing required fields." }, { status: 400 });
     }
     await db.collection("bookingLeads").add({
+      ...body.data,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+    return Response.json({ ok: true });
+  }
+
+  if (body.type === "review") {
+    if (!validateReview(body.data)) {
+      return Response.json({ error: "Missing or invalid fields." }, { status: 400 });
+    }
+    await db.collection("reviews").add({
       ...body.data,
       createdAt: FieldValue.serverTimestamp(),
     });
