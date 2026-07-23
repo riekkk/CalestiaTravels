@@ -517,7 +517,9 @@ function mapTourPackage(id: string, data: Record<string, unknown>): TourPackage 
     id,
     slug: data.slug as string,
     publishStatus: (data.publishStatus as TourPackage["publishStatus"]) ?? "Draft",
-    category: data.category as TourPackage["category"],
+    // Legacy docs predating this field read as undefined — treat as
+    // domestic so they still surface on a category tab instead of vanishing.
+    category: (data.category as TourPackage["category"]) ?? "domestic",
     title: data.title as string,
     destinationLabel: data.destinationLabel as string,
     tagline: (data.tagline as string) ?? "",
@@ -544,13 +546,20 @@ function mapTourPackage(id: string, data: Record<string, unknown>): TourPackage 
   };
 }
 
-// Public site — only packages the admin has published.
+// Public site — only packages the admin has published. Sorted newest-first
+// client-side rather than via a Firestore orderBy: combining that with the
+// publishStatus equality filter would need a composite index this project
+// doesn't declare anywhere, and the package count here is small enough that
+// sorting in JS is simpler than depending on one existing in Firestore.
 export function subscribeToActiveTourPackages(
   callback: (tours: TourPackage[]) => void
 ) {
   const q = query(collection(requireDb(), "tourPackages"), where("publishStatus", "==", "Active"));
   return onSnapshot(q, (snapshot) => {
-    callback(snapshot.docs.map((docSnap) => mapTourPackage(docSnap.id, docSnap.data())));
+    const tours = snapshot.docs
+      .map((docSnap) => mapTourPackage(docSnap.id, docSnap.data()))
+      .sort((a, b) => b.createdAt - a.createdAt);
+    callback(tours);
   });
 }
 

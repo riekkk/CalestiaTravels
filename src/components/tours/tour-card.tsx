@@ -24,6 +24,11 @@ export function TourCard({ tour }: { tour: TourPackage }) {
             {hasContent ? tourDurationLabel(tour) : "Coming Soon"}
           </Badge>
         </div>
+        <div className="absolute right-4 top-4">
+          <Badge tone={tour.category === "domestic" ? "success" : "warning"}>
+            {tour.category === "domestic" ? "Domestic" : "International"}
+          </Badge>
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col p-6">

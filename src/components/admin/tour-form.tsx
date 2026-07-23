@@ -6,6 +6,7 @@ import type { TourPackage } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/form-fields";
+import { CategorySelector } from "@/components/admin/category-selector";
 import { StringListEditor } from "@/components/admin/string-list-editor";
 import { PhotoUrlEditor } from "@/components/admin/photo-url-editor";
 import { ItineraryEditor } from "@/components/admin/itinerary-editor";
@@ -146,6 +147,13 @@ export function TourForm({
               placeholder="dumaguete-siquijor"
             />
           </div>
+          <div className="sm:col-span-2">
+            <Label>Tour Type</Label>
+            <CategorySelector
+              value={form.category}
+              onChange={(category) => patch({ category })}
+            />
+          </div>
           <div>
             <Label htmlFor="destination">Destination</Label>
             <Input
@@ -162,17 +170,6 @@ export function TourForm({
               value={form.departure}
               onChange={(e) => patch({ departure: e.target.value })}
             />
-          </div>
-          <div>
-            <Label htmlFor="category">Type</Label>
-            <Select
-              id="category"
-              value={form.category}
-              onChange={(e) => patch({ category: e.target.value as TourFormData["category"] })}
-            >
-              <option value="domestic">Domestic</option>
-              <option value="international">International</option>
-            </Select>
           </div>
           <div>
             <Label htmlFor="durationDays">Duration (Days)</Label>
