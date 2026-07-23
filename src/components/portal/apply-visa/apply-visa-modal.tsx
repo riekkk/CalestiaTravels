@@ -114,7 +114,7 @@ export function ApplyVisaModal({ open, onClose }: { open: boolean; onClose: () =
         applicantCount: applicants.length,
         amount,
         method,
-        proofOfPayment: proof.dataUrl,
+        proofOfPaymentPath: proof.storagePath,
         proofFileName: proof.fileName,
       });
 
@@ -179,8 +179,9 @@ export function ApplyVisaModal({ open, onClose }: { open: boolean; onClose: () =
         />
       )}
 
-      {step === "payment-summary" && (
+      {step === "payment-summary" && user && (
         <PaymentSummaryStep
+          user={user}
           applicants={applicants}
           proof={proof}
           onProofChange={setProof}

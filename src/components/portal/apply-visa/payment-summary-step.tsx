@@ -1,16 +1,24 @@
 "use client";
 
 import { useRef, useState } from "react";
+import type { User } from "firebase/auth";
 import { FileText, Loader2, UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { fileToProofOfPayment } from "@/lib/file-to-data-url";
+import { uploadFile } from "@/lib/upload";
+import { MAX_UPLOAD_SIZE_BYTES, MAX_UPLOAD_SIZE_LABEL } from "@/lib/upload-config";
 import { applicationTierLabel, getVisaFee, type ApplicationTier } from "@/lib/payment-config";
 import { formatPeso } from "@/lib/utils";
 import type { ApplicantEntry } from "@/components/portal/apply-visa/applicant-form-step";
 
-export type ProofOfPayment = { dataUrl: string; fileName: string };
+export type ProofOfPayment = {
+  storagePath: string;
+  previewUrl: string;
+  fileName: string;
+  isImage: boolean;
+};
 
 export function PaymentSummaryStep({
+  user,
   applicants,
   proof,
   onProofChange,
@@ -21,6 +29,7 @@ export function PaymentSummaryStep({
   submitting,
   error,
 }: {
+  user: User;
   applicants: ApplicantEntry[];
   proof: ProofOfPayment | null;
   onProofChange: (proof: ProofOfPayment | null) => void;
@@ -42,11 +51,20 @@ export function PaymentSummaryStep({
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
+    if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+      setUploadError(`File is too large. Please upload a file under ${MAX_UPLOAD_SIZE_LABEL}.`);
+      return;
+    }
     setUploadError("");
     setUploading(true);
     try {
-      const result = await fileToProofOfPayment(file);
-      onProofChange(result);
+      const { path, url } = await uploadFile(user, file, "payment-proof");
+      onProofChange({
+        storagePath: path,
+        previewUrl: url,
+        fileName: file.name,
+        isImage: file.type.startsWith("image/"),
+      });
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
@@ -107,10 +125,10 @@ export function PaymentSummaryStep({
         {proof ? (
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-primary/15 bg-white p-4">
             <div className="flex items-center gap-3 overflow-hidden">
-              {proof.dataUrl.startsWith("data:image") ? (
+              {proof.isImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={proof.dataUrl}
+                  src={proof.previewUrl}
                   alt="Proof of payment preview"
                   className="h-12 w-12 shrink-0 rounded-lg object-cover"
                 />
@@ -154,14 +172,14 @@ export function PaymentSummaryStep({
             <span className="text-sm font-medium text-primary-dark">
               {uploading ? "Processing..." : "Upload Proof of Payment"}
             </span>
-            <span className="text-xs text-ink/45">Image or PDF</span>
+            <span className="text-xs text-ink/45">Image or PDF, max {MAX_UPLOAD_SIZE_LABEL}</span>
           </button>
         )}
         <input
           ref={inputRef}
           type="file"
           className="hidden"
-          accept="image/*,.pdf"
+          accept="image/jpeg,image/png,image/webp,.pdf"
           onChange={(e) => handleFile(e.target.files?.[0])}
         />
         {uploadError && <p className="mt-2 text-sm text-red-600">{uploadError}</p>}

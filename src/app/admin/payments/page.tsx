@@ -1,8 +1,11 @@
 "use client";
 
-import { ExternalLink, Wallet } from "lucide-react";
+import { useState } from "react";
+import { ExternalLink, Loader2, Wallet } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 import { useAllPayments } from "@/lib/admin-hooks";
 import { updatePaymentStatus } from "@/lib/firestore";
+import { getSignedFileUrl } from "@/lib/upload";
 import { StatusSelect } from "@/components/admin/status-select";
 import { EmptyState } from "@/components/portal/empty-state";
 import { formatDate, formatPeso } from "@/lib/utils";
@@ -11,7 +14,22 @@ import type { PaymentStatus } from "@/lib/types";
 const statusOptions: PaymentStatus[] = ["Pending", "Accepted", "Re-submit Proof of Payment"];
 
 export default function AdminPaymentsPage() {
+  const { user } = useAuth();
   const { payments, loading } = useAllPayments(true);
+  const [viewingId, setViewingId] = useState<string | null>(null);
+
+  async function handleViewProof(paymentId: string) {
+    if (!user) return;
+    setViewingId(paymentId);
+    try {
+      const url = await getSignedFileUrl(user, "payment-proof", paymentId);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Unable to open file.");
+    } finally {
+      setViewingId(null);
+    }
+  }
 
   return (
     <div>
@@ -57,15 +75,20 @@ export default function AdminPaymentsPage() {
                     <td className="px-5 py-4 text-ink/65">{formatPeso(payment.amount)}</td>
                     <td className="px-5 py-4 text-ink/65">{formatDate(payment.createdAt)}</td>
                     <td className="px-5 py-4">
-                      {payment.proofOfPayment ? (
-                        <a
-                          href={payment.proofOfPayment}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-xs font-medium text-primary underline"
+                      {payment.proofOfPaymentPath ? (
+                        <button
+                          type="button"
+                          onClick={() => handleViewProof(payment.id)}
+                          disabled={viewingId === payment.id}
+                          className="flex items-center gap-1 text-xs font-medium text-primary underline disabled:opacity-50"
                         >
-                          View <ExternalLink className="h-3 w-3" />
-                        </a>
+                          View
+                          {viewingId === payment.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <ExternalLink className="h-3 w-3" />
+                          )}
+                        </button>
                       ) : (
                         <span className="text-xs text-ink/40">None</span>
                       )}

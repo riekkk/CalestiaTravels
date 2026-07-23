@@ -2,7 +2,8 @@
 
 import { use, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, Loader2, Send } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileText, Loader2, Send } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 import { useAllApplications, useAllDocuments } from "@/lib/admin-hooks";
 import { useNotifications } from "@/lib/portal-hooks";
 import {
@@ -12,6 +13,7 @@ import {
   updateApplicationNotes,
   updateApplicationStatus,
 } from "@/lib/firestore";
+import { getSignedFileUrl } from "@/lib/upload";
 import { getVisaTypeByTitle } from "@/lib/data/visa-types";
 import { StatusSelect } from "@/components/admin/status-select";
 import { AppointmentForm } from "@/components/admin/appointment-form";
@@ -38,6 +40,7 @@ export default function AdminApplicationDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { user } = useAuth();
   const { applications } = useAllApplications(true);
   const { documents } = useAllDocuments(true);
   const application = applications.find((app) => app.id === id);
@@ -46,6 +49,20 @@ export default function AdminApplicationDetailPage({
   const appDocuments = documents.filter((doc) => doc.applicationId === id);
   const appActivity = notifications.filter((note) => note.applicationId === id);
   const visaType = application ? getVisaTypeByTitle(application.visaType) : undefined;
+  const [viewingDocId, setViewingDocId] = useState<string | null>(null);
+
+  async function handleViewDocument(docId: string) {
+    if (!user) return;
+    setViewingDocId(docId);
+    try {
+      const url = await getSignedFileUrl(user, "document", docId);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Unable to open file.");
+    } finally {
+      setViewingDocId(null);
+    }
+  }
 
   const [notes, setNotes] = useState(application?.notes ?? "");
   const [notesSaved, setNotesSaved] = useState(false);
@@ -176,17 +193,22 @@ export default function AdminApplicationDetailPage({
             ) : (
               <div className="space-y-2">
                 {appDocuments.map((doc) => (
-                  <a
+                  <button
                     key={doc.id}
-                    href={doc.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-xl border border-primary/10 bg-white p-4"
+                    type="button"
+                    onClick={() => handleViewDocument(doc.id)}
+                    disabled={viewingDocId === doc.id}
+                    className="flex w-full items-center gap-3 rounded-xl border border-primary/10 bg-white p-4 text-left disabled:opacity-50"
                   >
-                    <FileText className="h-4 w-4 shrink-0 text-primary" />
+                    {viewingDocId === doc.id ? (
+                      <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" />
+                    ) : (
+                      <FileText className="h-4 w-4 shrink-0 text-primary" />
+                    )}
                     <span className="flex-1 truncate text-sm text-ink/75">{doc.fileName}</span>
                     <span className="text-xs text-ink/40">{formatDate(doc.uploadedAt)}</span>
-                  </a>
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0 text-ink/30" />
+                  </button>
                 ))}
               </div>
             )}

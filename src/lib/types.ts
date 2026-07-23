@@ -170,7 +170,9 @@ export type Payment = {
   applicantCount: number;
   amount: number;
   method: PaymentMethod;
-  proofOfPayment: string;
+  // Path within the Supabase "payment-proofs" bucket. Private bucket, so
+  // viewing always goes through /api/signed-url rather than a stored URL.
+  proofOfPaymentPath: string;
   proofFileName: string;
   status: PaymentStatus;
   createdAt: number;
@@ -183,8 +185,9 @@ export type ClientDocument = {
   userEmail?: string;
   applicationId: string | null;
   fileName: string;
+  // Path within the Supabase "documents" bucket. Private bucket, so viewing
+  // always goes through /api/signed-url rather than a stored public URL.
   storagePath: string;
-  url?: string;
   uploadedAt: number;
 };
 

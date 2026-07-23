@@ -3,7 +3,7 @@
 import { useRef, useState, type DragEvent } from "react";
 import { Clock, Loader2, UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DOCUMENT_UPLOADS_ENABLED } from "@/lib/feature-flags";
+import { isUploadConfigured, MAX_UPLOAD_SIZE_LABEL } from "@/lib/upload-config";
 
 export function FileUpload({
   onUpload,
@@ -34,16 +34,15 @@ export function FileUpload({
     handleFile(e.dataTransfer.files?.[0]);
   }
 
-  if (!DOCUMENT_UPLOADS_ENABLED) {
+  if (!isUploadConfigured) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/15 bg-bg-light px-6 py-10 text-center">
         <Clock className="h-6 w-6 text-primary/50" strokeWidth={1.5} />
         <p className="text-sm font-medium text-primary-dark/70">
-          Document Uploads: Coming Soon
+          File Uploads: Not Connected Yet
         </p>
         <p className="text-xs text-ink/45">
-          We&apos;re finishing setup on secure file storage. In the meantime,
-          you can email documents to{" "}
+          In the meantime, you can email documents to{" "}
           <a href="mailto:Calestia.assistance@gmail.com" className="underline">
             Calestia.assistance@gmail.com
           </a>
@@ -83,7 +82,7 @@ export function FileUpload({
         <p className="text-sm font-medium text-primary-dark">
           {uploading ? "Uploading..." : "Drag & drop a file, or click to browse"}
         </p>
-        <p className="text-xs text-ink/45">PDF, JPG, or PNG, max 10MB</p>
+        <p className="text-xs text-ink/45">PDF, JPG, or PNG, max {MAX_UPLOAD_SIZE_LABEL}</p>
         <input
           ref={inputRef}
           type="file"

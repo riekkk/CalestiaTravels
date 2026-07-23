@@ -12,13 +12,7 @@ import {
   where,
   type Timestamp,
 } from "firebase/firestore";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import type {
   ApplicantDetails,
   ApplicationAppointment,
@@ -76,7 +70,6 @@ function mapDocument(id: string, data: Record<string, unknown>): ClientDocument 
     applicationId: (data.applicationId as string) ?? null,
     fileName: data.fileName as string,
     storagePath: data.storagePath as string,
-    url: data.url as string | undefined,
     uploadedAt: toMillis(data.uploadedAt),
   };
 }
@@ -275,35 +268,25 @@ export function subscribeToAllDocuments(
   });
 }
 
-export async function uploadClientDocument(
+// The file itself is uploaded separately via uploadFile() (src/lib/upload.ts,
+// hits /api/upload) — this just records the resulting Supabase path.
+// Deletion goes through deleteUploadedDocument() in the same file instead of
+// a Firestore-only helper, since it needs to remove the Supabase object too.
+export async function createDocumentRecord(
   userId: string,
   userEmail: string,
-  file: File,
+  fileName: string,
+  storagePath: string,
   applicationId: string | null
 ) {
-  if (!storage) throw new Error("Firebase is not configured yet.");
-  const path = `users/${userId}/documents/${Date.now()}-${file.name}`;
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
   await addDoc(collection(requireDb(), "documents"), {
     userId,
     userEmail,
     applicationId,
-    fileName: file.name,
-    storagePath: path,
-    url,
+    fileName,
+    storagePath,
     uploadedAt: serverTimestamp(),
   });
-}
-
-export async function deleteClientDocument(documentId: string, storagePath: string) {
-  if (storage) {
-    await deleteObject(ref(storage, storagePath)).catch(() => {
-      // Already gone from Storage — still remove the Firestore record.
-    });
-  }
-  await deleteDoc(doc(requireDb(), "documents", documentId));
 }
 
 export function subscribeToBookings(
@@ -414,7 +397,7 @@ function mapPayment(id: string, data: Record<string, unknown>): Payment {
     applicantCount: (data.applicantCount as number) ?? 1,
     amount: (data.amount as number) ?? 0,
     method: data.method as PaymentMethod,
-    proofOfPayment: (data.proofOfPayment as string) ?? "",
+    proofOfPaymentPath: (data.proofOfPaymentPath as string) ?? "",
     proofFileName: (data.proofFileName as string) ?? "",
     status: (data.status as PaymentStatus) ?? "Pending",
     createdAt: toMillis(data.createdAt),
@@ -451,7 +434,7 @@ export async function createPayment(data: {
   applicantCount: number;
   amount: number;
   method: PaymentMethod;
-  proofOfPayment: string;
+  proofOfPaymentPath: string;
   proofFileName: string;
 }): Promise<string> {
   const ref = await addDoc(collection(requireDb(), "payments"), {

@@ -1,13 +1,13 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Download, FileText } from "lucide-react";
+import { ArrowLeft, Download, ExternalLink, FileText, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useApplications, useDocuments, useNotifications } from "@/lib/portal-hooks";
-import { uploadClientDocument } from "@/lib/firestore";
+import { createDocumentRecord } from "@/lib/firestore";
+import { uploadFile, getSignedFileUrl } from "@/lib/upload";
 import { getVisaTypeByTitle } from "@/lib/data/visa-types";
-import { DOCUMENT_UPLOADS_ENABLED } from "@/lib/feature-flags";
 import { ApplicationStatusBadge } from "@/components/portal/status-badge";
 import { ApplicationTimeline } from "@/components/portal/application-timeline";
 import { AppointmentCard } from "@/components/portal/appointment-card";
@@ -26,6 +26,20 @@ export default function ApplicationDetailPage({
   const { applications } = useApplications(user?.uid);
   const { documents } = useDocuments(user?.uid);
   const { notifications } = useNotifications(user?.uid);
+  const [viewingId, setViewingId] = useState<string | null>(null);
+
+  async function handleView(docId: string) {
+    if (!user) return;
+    setViewingId(docId);
+    try {
+      const url = await getSignedFileUrl(user, "document", docId);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Unable to open file.");
+    } finally {
+      setViewingId(null);
+    }
+  }
 
   const application = applications.find((app) => app.id === id);
   const appDocuments = documents.filter((doc) => doc.applicationId === id);
@@ -89,22 +103,22 @@ export default function ApplicationDetailPage({
             <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">
               Downloadable Documents
             </h2>
-            {DOCUMENT_UPLOADS_ENABLED ? (
-              <p className="text-sm text-ink/50">No shared documents yet.</p>
-            ) : (
-              <div className="flex items-center gap-3 rounded-2xl border border-dashed border-primary/20 bg-white p-5">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary/50">
-                  <Download className="h-5 w-5" strokeWidth={1.75} />
-                </span>
-                <div>
-                  <p className="text-sm font-medium text-primary-dark/70">Coming Soon</p>
-                  <p className="text-xs text-ink/50">
-                    Once your visa or shared documents are ready, you&apos;ll be able to
-                    download them here.
-                  </p>
-                </div>
+            {/* Admin-shared files (e.g. an approved visa scan pushed back to
+                the client) is a separate, not-yet-built feature — unrelated
+                to the client's own uploads below, which now work via
+                Supabase. */}
+            <div className="flex items-center gap-3 rounded-2xl border border-dashed border-primary/20 bg-white p-5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary/50">
+                <Download className="h-5 w-5" strokeWidth={1.75} />
+              </span>
+              <div>
+                <p className="text-sm font-medium text-primary-dark/70">Coming Soon</p>
+                <p className="text-xs text-ink/50">
+                  Once your visa or shared documents are ready, you&apos;ll be able to
+                  download them here.
+                </p>
               </div>
-            )}
+            </div>
           </div>
 
           <div>
@@ -121,6 +135,19 @@ export default function ApplicationDetailPage({
                     <FileText className="h-4 w-4 text-primary" />
                     <span className="flex-1 truncate text-sm text-ink/75">{doc.fileName}</span>
                     <span className="text-xs text-ink/40">{formatDate(doc.uploadedAt)}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleView(doc.id)}
+                      disabled={viewingId === doc.id}
+                      aria-label="View document"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-primary/60 hover:bg-bg-light hover:text-primary disabled:opacity-50"
+                    >
+                      {viewingId === doc.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      )}
+                    </button>
                   </div>
                 ))}
               </div>
@@ -128,7 +155,8 @@ export default function ApplicationDetailPage({
             <FileUpload
               onUpload={async (file) => {
                 if (!user) return;
-                await uploadClientDocument(user.uid, user.email ?? "", file, application.id);
+                const { path } = await uploadFile(user, file, "document");
+                await createDocumentRecord(user.uid, user.email ?? "", file.name, path, application.id);
               }}
             />
           </div>

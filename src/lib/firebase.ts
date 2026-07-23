@@ -1,8 +1,10 @@
 import { type FirebaseApp, getApps, initializeApp } from "firebase/app";
 import { type Auth, getAuth } from "firebase/auth";
 import { type Firestore, getFirestore } from "firebase/firestore";
-import { type FirebaseStorage, getStorage } from "firebase/storage";
 
+// File storage (tour photos, documents, payment proofs) runs on Supabase
+// instead — see src/lib/supabase-admin.ts. Firebase here is Auth + Firestore
+// only.
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -19,13 +21,11 @@ export const isFirebaseConfigured = Boolean(
 let app: FirebaseApp | undefined;
 let auth: Auth | undefined;
 let db: Firestore | undefined;
-let storage: FirebaseStorage | undefined;
 
 if (isFirebaseConfigured) {
   app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
-  storage = getStorage(app);
 }
 
-export { app, auth, db, storage };
+export { app, auth, db };

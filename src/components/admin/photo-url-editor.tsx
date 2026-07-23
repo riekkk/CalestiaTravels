@@ -1,16 +1,13 @@
 "use client";
 
-import { ArrowDown, ArrowUp, ImageOff, Plus, Star, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowDown, ArrowUp, ImageOff, Loader2, Plus, Star, Upload, X } from "lucide-react";
 import { Input } from "@/components/ui/form-fields";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
+import { uploadFile } from "@/lib/upload";
+import { isUploadConfigured } from "@/lib/upload-config";
 
-// Firebase Storage is on hold (Blaze plan not active yet). Instead of a
-// real file-upload widget, admins paste photo URLs (their own hosting, or
-// a free image host) — PlaceholderImage already handles a broken/missing
-// URL by falling back to the gradient, so this is safe to ship today.
-// TODO: once Storage is enabled, replace this with a real drag-drop
-// FileUpload (see src/components/portal/file-upload.tsx for the pattern)
-// that uploads to Storage and pushes the resulting download URL in here.
 export function PhotoUrlEditor({
   photos,
   coverPhotoIndex,
@@ -22,6 +19,25 @@ export function PhotoUrlEditor({
   onChange: (next: string[]) => void;
   onCoverChange: (index: number) => void;
 }) {
+  const { user } = useAuth();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  async function handleFileSelect(file: File | undefined) {
+    if (!file || !user) return;
+    setUploadError("");
+    setUploading(true);
+    try {
+      const { url } = await uploadFile(user, file, "tour-photo");
+      onChange([...photos, url]);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   function updatePhoto(index: number, value: string) {
     const next = [...photos];
     next[index] = value;
@@ -49,9 +65,11 @@ export function PhotoUrlEditor({
     <div>
       <div className="mb-2 flex items-center justify-between">
         <p className="text-sm font-medium text-primary-dark">Photos</p>
-        <span className="flex items-center gap-1 text-xs text-amber-700">
-          <ImageOff className="h-3.5 w-3.5" /> File upload coming soon, paste image URLs for now
-        </span>
+        {!isUploadConfigured && (
+          <span className="flex items-center gap-1 text-xs text-amber-700">
+            <ImageOff className="h-3.5 w-3.5" /> File upload not connected, paste image URLs for now
+          </span>
+        )}
       </div>
       <div className="space-y-2">
         {photos.map((url, index) => (
@@ -108,13 +126,38 @@ export function PhotoUrlEditor({
           </div>
         ))}
       </div>
-      <button
-        type="button"
-        onClick={() => onChange([...photos, ""])}
-        className="mt-2 flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-dark"
-      >
-        <Plus className="h-3.5 w-3.5" /> Add Photo URL
-      </button>
+      <div className="mt-2 flex flex-wrap items-center gap-4">
+        {isUploadConfigured && (
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-dark disabled:opacity-50"
+          >
+            {uploading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Upload className="h-3.5 w-3.5" />
+            )}
+            {uploading ? "Uploading..." : "Upload Photo"}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => onChange([...photos, ""])}
+          className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-dark"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add Photo URL
+        </button>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={(e) => handleFileSelect(e.target.files?.[0])}
+      />
+      {uploadError && <p className="mt-2 text-xs text-red-600">{uploadError}</p>}
     </div>
   );
 }

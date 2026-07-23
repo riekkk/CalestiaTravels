@@ -1,23 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Loader2, Trash2 } from "lucide-react";
+import { ExternalLink, FileText, Loader2, Trash2 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 import { useAllDocuments } from "@/lib/admin-hooks";
-import { deleteClientDocument } from "@/lib/firestore";
+import { getSignedFileUrl, deleteUploadedDocument } from "@/lib/upload";
 import { EmptyState } from "@/components/portal/empty-state";
 import { formatDate } from "@/lib/utils";
 
 export default function AdminDocumentsPage() {
+  const { user } = useAuth();
   const { documents, loading } = useAllDocuments(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function handleDelete(id: string, storagePath: string) {
-    if (!confirm("Delete this document? This cannot be undone.")) return;
-    setDeletingId(id);
+  async function handleView(id: string) {
+    if (!user) return;
+    setBusyId(id);
     try {
-      await deleteClientDocument(id, storagePath);
+      const url = await getSignedFileUrl(user, "document", id);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Unable to open file.");
     } finally {
-      setDeletingId(null);
+      setBusyId(null);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (!user) return;
+    if (!confirm("Delete this document? This cannot be undone.")) return;
+    setBusyId(id);
+    try {
+      await deleteUploadedDocument(user, id);
+    } finally {
+      setBusyId(null);
     }
   }
 
@@ -52,31 +68,32 @@ export default function AdminDocumentsPage() {
                 {documents.map((doc) => (
                   <tr key={doc.id}>
                     <td className="px-5 py-4">
-                      <a
-                        href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 font-medium text-primary-dark hover:underline"
+                      <button
+                        type="button"
+                        onClick={() => handleView(doc.id)}
+                        disabled={busyId === doc.id}
+                        className="flex items-center gap-2 font-medium text-primary-dark hover:underline disabled:opacity-50"
                       >
-                        <FileText className="h-4 w-4 shrink-0 text-primary" />
+                        {busyId === doc.id ? (
+                          <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" />
+                        ) : (
+                          <FileText className="h-4 w-4 shrink-0 text-primary" />
+                        )}
                         {doc.fileName}
-                      </a>
+                        <ExternalLink className="h-3 w-3 shrink-0 text-ink/30" />
+                      </button>
                     </td>
                     <td className="px-5 py-4 text-ink/65">{doc.userEmail ?? doc.userId}</td>
                     <td className="px-5 py-4 text-ink/65">{formatDate(doc.uploadedAt)}</td>
                     <td className="px-5 py-4 text-right">
                       <button
                         type="button"
-                        onClick={() => handleDelete(doc.id, doc.storagePath)}
-                        disabled={deletingId === doc.id}
+                        onClick={() => handleDelete(doc.id)}
+                        disabled={busyId === doc.id}
                         className="text-red-500 hover:text-red-600 disabled:opacity-50"
                         aria-label="Delete document"
                       >
-                        {deletingId === doc.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </td>
                   </tr>
