@@ -78,9 +78,17 @@ export type VisaType = {
 };
 
 export type DownloadableForm = {
+  id: string;
   name: string;
   description: string;
   fileName: string;
+  fileType: "PDF" | "DOCX";
+  fileSize: string;
+};
+
+export type ChecklistItem = {
+  id: string;
+  label: string;
 };
 
 export type Review = {

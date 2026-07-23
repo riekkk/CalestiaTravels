@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, CalendarDays, FileStack, FileText } from "lucide-react";
+import { Bell, CalendarDays, Download, FileStack, FileText, Home } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import {
   useApplications,
@@ -13,6 +13,7 @@ import { StatCard } from "@/components/portal/stat-card";
 import { ApplicationStatusBadge } from "@/components/portal/status-badge";
 import { EmptyState } from "@/components/portal/empty-state";
 import { ApplyVisaButton } from "@/components/portal/apply-visa/apply-visa-button";
+import { ButtonLink } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -38,7 +39,17 @@ export default function DashboardPage() {
             Here&apos;s a snapshot of your applications and bookings.
           </p>
         </div>
-        <ApplyVisaButton>New Visa Application</ApplyVisaButton>
+        <div className="flex flex-wrap gap-3">
+          <ButtonLink href="/" variant="secondary" size="md">
+            <Home className="h-4 w-4" />
+            Go to Homepage
+          </ButtonLink>
+          <ButtonLink href="/portal/documents?tab=forms" variant="secondary" size="md">
+            <Download className="h-4 w-4" />
+            Download Forms
+          </ButtonLink>
+          <ApplyVisaButton>New Visa Application</ApplyVisaButton>
+        </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

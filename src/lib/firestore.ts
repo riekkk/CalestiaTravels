@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   type Timestamp,
@@ -243,6 +244,27 @@ export async function setDocumentChecklistItem(
     [`documentChecklist.${documentName}`]: received,
     updatedAt: serverTimestamp(),
   });
+}
+
+// Forms & Checklist tab, "Visa Requirements Checklist" section — one doc
+// per client (keyed by uid), independent of any single application. Uses
+// setDoc({ merge: true }) rather than updateDoc() since the doc may not
+// exist yet for a client who hasn't checked anything off.
+export function subscribeToFormsChecklist(
+  userId: string,
+  callback: (checklist: Record<string, boolean>) => void
+) {
+  return onSnapshot(doc(requireDb(), "formsChecklists", userId), (snap) => {
+    callback((snap.data()?.checklist as Record<string, boolean>) ?? {});
+  });
+}
+
+export async function setFormsChecklistItem(userId: string, itemId: string, checked: boolean) {
+  await setDoc(
+    doc(requireDb(), "formsChecklists", userId),
+    { [`checklist.${itemId}`]: checked, updatedAt: serverTimestamp() },
+    { merge: true }
+  );
 }
 
 export function subscribeToDocuments(
@@ -512,7 +534,9 @@ function mapTourPackage(id: string, data: Record<string, unknown>): TourPackage 
     coverPhotoIndex: (data.coverPhotoIndex as number) ?? 0,
     itinerary: (data.itinerary as TourPackage["itinerary"]) ?? [],
     availabilityStatus: (data.availabilityStatus as TourPackage["availabilityStatus"]) ?? "Available",
-    remainingSlots: data.remainingSlots as number | undefined,
+    // Stored as `null` (see sanitizeTourPackageData) when not applicable;
+    // normalize back to `undefined` so callers can keep using `!== undefined`.
+    remainingSlots: (data.remainingSlots as number | null | undefined) ?? undefined,
     dateRanges: (data.dateRanges as TourPackage["dateRanges"]) ?? [],
     faqs: (data.faqs as TourPackage["faqs"]) ?? [],
     createdAt: toMillis(data.createdAt),
@@ -548,11 +572,73 @@ export function subscribeToAllTourPackages(callback: (tours: TourPackage[]) => v
   });
 }
 
+// Firestore's addDoc/updateDoc reject any field whose value is `undefined`
+// — top-level or nested — and reject the whole write, not just that field.
+// Several fields on the tour package form are legitimately left blank
+// (remainingSlots outside "Limited Slots", unset pricing tiers, per-day
+// meals/accommodation), so every optional field needs an explicit default
+// before hitting the SDK. Only keys actually present in `data` are touched,
+// so this stays safe to use with the Partial<> update path too.
+function sanitizeTourPackageData<
+  T extends Partial<Omit<TourPackage, "id" | "createdAt" | "updatedAt">>
+>(data: T): T {
+  const sanitized: Record<string, unknown> = { ...data };
+  const defaults: Record<string, unknown> = {
+    slug: "",
+    publishStatus: "Draft",
+    category: "domestic",
+    title: "",
+    destinationLabel: "",
+    tagline: "",
+    overview: "",
+    highlights: [],
+    inclusions: [],
+    exclusions: [],
+    durationDays: 0,
+    durationNights: 0,
+    maxGroupSize: 0,
+    departure: "",
+    photos: [],
+    coverPhotoIndex: 0,
+    itinerary: [],
+    availabilityStatus: "Available",
+    // Not applicable outside "Limited Slots" — null, not 0 (0 would read as sold out).
+    remainingSlots: null,
+    dateRanges: [],
+    faqs: [],
+  };
+
+  for (const key of Object.keys(defaults)) {
+    if (key in sanitized && sanitized[key] === undefined) {
+      sanitized[key] = defaults[key];
+    }
+  }
+
+  if ("pricing" in sanitized && sanitized.pricing && typeof sanitized.pricing === "object") {
+    const pricing = sanitized.pricing as TourPackage["pricing"];
+    sanitized.pricing = {
+      budget: pricing.budget ?? null,
+      standard: pricing.standard ?? null,
+      luxury: pricing.luxury ?? null,
+    };
+  }
+
+  if ("itinerary" in sanitized && Array.isArray(sanitized.itinerary)) {
+    sanitized.itinerary = (sanitized.itinerary as TourPackage["itinerary"]).map((day) => ({
+      ...day,
+      meals: day.meals ?? "",
+      accommodation: day.accommodation ?? "",
+    }));
+  }
+
+  return sanitized as T;
+}
+
 export async function createTourPackage(
   data: Omit<TourPackage, "id" | "createdAt" | "updatedAt">
 ) {
   const ref = await addDoc(collection(requireDb(), "tourPackages"), {
-    ...data,
+    ...sanitizeTourPackageData(data),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -564,7 +650,7 @@ export async function updateTourPackage(
   data: Partial<Omit<TourPackage, "id" | "createdAt" | "updatedAt">>
 ) {
   await updateDoc(doc(requireDb(), "tourPackages", id), {
-    ...data,
+    ...sanitizeTourPackageData(data),
     updatedAt: serverTimestamp(),
   });
 }

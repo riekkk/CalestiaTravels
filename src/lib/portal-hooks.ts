@@ -6,6 +6,7 @@ import {
   subscribeToApplications,
   subscribeToBookings,
   subscribeToDocuments,
+  subscribeToFormsChecklist,
   subscribeToNotifications,
   subscribeToPayments,
 } from "@/lib/firestore";
@@ -47,6 +48,22 @@ export function useDocuments(userId: string | undefined) {
   }, [userId]);
 
   return { documents, loading };
+}
+
+export function useFormsChecklist(userId: string | undefined) {
+  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(Boolean(userId) && isFirebaseConfigured);
+
+  useEffect(() => {
+    if (!userId || !isFirebaseConfigured) return;
+    const unsubscribe = subscribeToFormsChecklist(userId, (data) => {
+      setChecklist(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [userId]);
+
+  return { checklist, loading };
 }
 
 export function useBookings(userId: string | undefined) {

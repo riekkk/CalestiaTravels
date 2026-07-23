@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarDays, FileStack, FileText, Inbox } from "lucide-react";
+import { CalendarDays, FileStack, FileText, Home, Inbox } from "lucide-react";
 import { useAllApplications, useAllBookings, useAllDocuments } from "@/lib/admin-hooks";
 import { StatCard } from "@/components/portal/stat-card";
 import { ApplicationStatusBadge, BookingStatusBadge } from "@/components/portal/status-badge";
 import { EmptyState } from "@/components/portal/empty-state";
+import { ButtonLink } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 
 export default function AdminDashboardPage() {
@@ -20,12 +21,20 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold text-primary-dark sm:text-3xl">
-        Staff Dashboard
-      </h1>
-      <p className="mt-1 text-sm text-ink/55">
-        Overview of every client application, document, and booking.
-      </p>
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold text-primary-dark sm:text-3xl">
+            Staff Dashboard
+          </h1>
+          <p className="mt-1 text-sm text-ink/55">
+            Overview of every client application, document, and booking.
+          </p>
+        </div>
+        <ButtonLink href="/" variant="secondary" size="md">
+          <Home className="h-4 w-4" />
+          Go to Homepage
+        </ButtonLink>
+      </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={FileStack} label="Open Applications" value={openApplications} />

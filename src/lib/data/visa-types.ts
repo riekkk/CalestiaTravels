@@ -489,28 +489,43 @@ export const applicationGuidelines = [
 
 export const downloadableForms: DownloadableForm[] = [
   {
+    id: "visa-application-form",
     name: "Visa Application Form (Japan)",
     description: "The standard Japan visa application form, required for every visa type.",
     fileName: "visa-application-form.pdf",
+    fileType: "PDF",
+    fileSize: "267 KB",
   },
   {
+    id: "multiple-entry-request-form",
     name: "Multiple-Entry Request Form",
     description: "Required when applying for a multiple-entry temporary visitor visa.",
     fileName: "multiple-entry-request-form.pdf",
+    fileType: "PDF",
+    fileSize: "297 KB",
   },
   {
+    id: "authorization-letter",
     name: "Authorization Letter",
     description: "Authorizes Calestia to file your application and release your passport on your behalf.",
     fileName: "authorization-letter.pdf",
+    fileType: "PDF",
+    fileSize: "389 KB",
   },
   {
+    id: "guarantee-letter",
     name: "Letter of Guarantee",
     description: "For guarantors covering an applicant's expenses and return travel.",
     fileName: "guarantee-letter.pdf",
+    fileType: "PDF",
+    fileSize: "239 KB",
   },
   {
+    id: "itinerary-format",
     name: "Travel Itinerary Format",
     description: "Template for listing your day-by-day activity plan and accommodation in Japan.",
     fileName: "itinerary-format.pdf",
+    fileType: "PDF",
+    fileSize: "600 KB",
   },
 ];
