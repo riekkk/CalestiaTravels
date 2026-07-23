@@ -56,7 +56,13 @@ export function TourDetailClient({ slug }: { slug: string }) {
   return (
     <>
       <section className="relative overflow-hidden bg-primary-dark text-white">
-        <PlaceholderImage label={tour.destinationLabel} src={tourHeroImage(tour)} fill sizes="100vw" />
+        <PlaceholderImage
+          label={tour.destinationLabel}
+          src={tourHeroImage(tour)}
+          fill
+          sizes="100vw"
+          preload
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/80 to-primary-dark/40" />
         <div className="container-page relative py-20 sm:py-24">
           <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-white">

@@ -12,6 +12,7 @@ export default function ToursPage() {
   return (
     <Section>
       <SectionHeading
+        as="h1"
         eyebrow="Tour Packages"
         title="Where Would You Like to Go?"
         description="Curated getaways across the Philippines and beyond, planned down to the last detail."

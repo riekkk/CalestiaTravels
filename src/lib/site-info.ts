@@ -11,7 +11,7 @@ export const SITE_INFO = {
 // Single source of truth for the production origin. Update this if a custom
 // domain is attached in Vercel later — everything (metadataBase, canonical
 // links, OG/Twitter image URLs, robots.ts, sitemap.ts) reads from here.
-export const SITE_URL = "https://calestiatravels.vercel.app";
+export const SITE_URL = "https://calestia-travels.vercel.app";
 export const SITE_NAME = "Calestia Travel and Tours";
 export const SITE_DESCRIPTION =
   "Calestia Travel and Tours: Japan visa assistance, tour packages, and travel services based in General Trias, Cavite, Philippines.";

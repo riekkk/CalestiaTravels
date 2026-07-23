@@ -17,7 +17,7 @@ export function BrandMark({
       width={size}
       height={size}
       className="rounded-lg"
-      priority
+      preload
     />
   );
 

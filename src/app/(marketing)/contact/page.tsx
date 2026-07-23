@@ -35,6 +35,7 @@ export default function ContactPage() {
   return (
     <Section>
       <SectionHeading
+        as="h1"
         eyebrow="Contact Us"
         title="We're Here to Help"
         description="Questions about a visa application or a tour package? Reach out and our team will respond promptly."

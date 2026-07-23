@@ -17,9 +17,11 @@ export function Hero() {
             Where Every Japan Journey Begins
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
-            We simplify the Japanese visa application process, guiding you
-            every step of the way with expert assistance, accurate
-            documentation, and a stress-free experience.
+            Calestia Travel and Tours is a Japan visa assistance agency based
+            in General Trias, Cavite, Philippines. We simplify the Japanese
+            visa application process, guiding you every step of the way with
+            expert assistance, accurate documentation, and a stress-free
+            experience.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <ButtonLink href="/tours" size="lg">

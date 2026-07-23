@@ -108,6 +108,7 @@ export default function FaqPage() {
   return (
     <Section>
       <SectionHeading
+        as="h1"
         eyebrow="FAQ"
         title="Frequently Asked Questions"
         description="Everything you need to know about our visa assistance and tour packages."

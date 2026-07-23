@@ -12,6 +12,7 @@ export default function DomesticToursPage() {
   return (
     <Section>
       <SectionHeading
+        as="h1"
         eyebrow="Domestic Tours"
         title="Explore the Philippines"
         description="Handpicked island getaways, with new destinations added regularly."

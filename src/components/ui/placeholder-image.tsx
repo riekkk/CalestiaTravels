@@ -45,12 +45,18 @@ export function PlaceholderImage({
   className,
   fill = false,
   sizes = "(min-width: 1024px) 33vw, 100vw",
+  preload = false,
 }: {
   label: string;
   src?: string;
   className?: string;
   fill?: boolean;
   sizes?: string;
+  // Above-the-fold hero images should skip native lazy-loading so they don't
+  // hurt LCP — pass preload for those, leave it off everywhere else (cards,
+  // gallery grids) so those keep loading lazily as the user scrolls to them.
+  // (Next.js 16 renamed the old `priority` prop to `preload`.)
+  preload?: boolean;
 }) {
   const [errored, setErrored] = useState(false);
   const showImage = Boolean(src) && !errored;
@@ -69,6 +75,7 @@ export function PlaceholderImage({
           alt={label}
           fill
           sizes={sizes}
+          preload={preload}
           className="object-cover"
           onError={() => setErrored(true)}
         />

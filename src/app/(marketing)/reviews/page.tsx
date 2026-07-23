@@ -12,6 +12,7 @@ export default function ReviewsPage() {
   return (
     <Section>
       <SectionHeading
+        as="h1"
         eyebrow="Client Reviews"
         title="What Our Clients Say"
         description="Feedback from travelers and visa applicants who've worked with Calestia."

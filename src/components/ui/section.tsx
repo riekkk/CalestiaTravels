@@ -22,11 +22,16 @@ export function SectionHeading({
   title,
   description,
   align = "center",
+  as: Heading = "h2",
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   align?: "center" | "left";
+  // Defaults to h2 (a subsection under the page's own h1). Pages where this
+  // is the first and only heading — no separate h1 elsewhere — should pass
+  // as="h1" so the page still has exactly one, per SEO/a11y heading rules.
+  as?: "h1" | "h2";
 }) {
   return (
     <div
@@ -40,9 +45,9 @@ export function SectionHeading({
           {eyebrow}
         </p>
       )}
-      <h2 className="font-heading text-3xl font-semibold text-primary-dark sm:text-4xl">
+      <Heading className="font-heading text-3xl font-semibold text-primary-dark sm:text-4xl">
         {title}
-      </h2>
+      </Heading>
       {description && (
         <p className="mt-4 text-base leading-relaxed text-ink/70">{description}</p>
       )}
