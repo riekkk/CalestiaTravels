@@ -1,5 +1,6 @@
 import "server-only";
-import { getAdminAuth, getAdminDb } from "@/lib/firebase-admin";
+import { getAdminDb } from "@/lib/firebase-admin";
+import { getAdminAuth } from "@/lib/firebase-admin-auth";
 
 // Shared by every upload-related API route: verifies the Firebase ID token
 // the client sent in the Authorization header, then checks the matching
