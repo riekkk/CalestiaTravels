@@ -5,7 +5,7 @@ import { Modal } from "@/components/ui/modal";
 import { useAuth } from "@/lib/auth-context";
 import { createApplicationGroup, createPayment } from "@/lib/firestore";
 import { sendFormEmails } from "@/lib/email";
-import { VISA_ASSISTANCE_FEE_PER_APPLICANT } from "@/lib/payment-config";
+import { applicationTierLabel, getVisaFee, type ApplicationTier } from "@/lib/payment-config";
 import { formatPeso } from "@/lib/utils";
 import { ApplyVisaStepper } from "@/components/portal/apply-visa/stepper";
 import {
@@ -96,13 +96,15 @@ export function ApplyVisaModal({ open, onClose }: { open: boolean; onClose: () =
             passportNumber: a.passportNumber,
             passportExpiry: a.passportExpiry,
             travelDate: a.travelDate,
+            applicationTier: a.applicationTier,
           },
         }))
       );
 
       const visaTypes = Array.from(new Set(applicants.map((a) => a.visaType)));
       const visaTypeLabel = visaTypes.length === 1 ? visaTypes[0] : "Multiple Visa Types";
-      const amount = applicants.length * VISA_ASSISTANCE_FEE_PER_APPLICANT;
+      const fees = applicants.map((a) => getVisaFee(a.visaType, a.applicationTier as ApplicationTier));
+      const amount = fees.reduce((sum, fee) => sum + fee, 0);
 
       await createPayment({
         userId: user.uid,
@@ -116,12 +118,19 @@ export function ApplyVisaModal({ open, onClose }: { open: boolean; onClose: () =
         proofFileName: proof.fileName,
       });
 
+      const breakdown = applicants
+        .map(
+          (a, i) =>
+            `- ${a.firstName} ${a.lastName}: ${a.visaType} (${applicationTierLabel(a.applicationTier)}), ${formatPeso(fees[i])}`
+        )
+        .join("\n");
+
       sendFormEmails({
         formType: "Visa Application Payment",
         clientName: profile?.name || user.displayName || "Client Portal user",
         clientEmail: user.email ?? "",
         clientPhone: profile?.phone ?? "",
-        details: `Visa Type: ${visaTypeLabel}\nApplicants: ${applicants.length}\nPayment Method: ${method}\nAmount: ${formatPeso(amount)}`,
+        details: `Applicants: ${applicants.length}\n${breakdown}\nPayment Method: ${method}\nTotal Amount: ${formatPeso(amount)}`,
         nextSteps:
           "We'll verify your payment and review your application. You'll be notified once your payment status is confirmed.",
       }).catch((err) => console.error("EmailJS send failed:", err));

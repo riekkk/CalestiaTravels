@@ -2,7 +2,8 @@
 
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatPeso } from "@/lib/utils";
+import { applicationTierLabel, getVisaFee, type ApplicationTier } from "@/lib/payment-config";
 import type { ApplicantEntry } from "@/components/portal/apply-visa/applicant-form-step";
 
 const PASSPORT_MASK = "••••••••";
@@ -65,6 +66,20 @@ export function ApplicantSummaryStep({
               <div>
                 <dt className="text-xs text-ink/45">Visa Type</dt>
                 <dd className="text-ink/75">{applicant.visaType}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-ink/45">Application Type</dt>
+                <dd className="text-ink/75">
+                  {applicant.applicationTier ? applicationTierLabel(applicant.applicationTier) : "-"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-ink/45">Fee</dt>
+                <dd className="text-ink/75">
+                  {applicant.visaType && applicant.applicationTier
+                    ? formatPeso(getVisaFee(applicant.visaType, applicant.applicationTier as ApplicationTier))
+                    : "-"}
+                </dd>
               </div>
               <div>
                 <dt className="text-xs text-ink/45">Passport Number</dt>

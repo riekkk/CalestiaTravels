@@ -134,6 +134,10 @@ export type ApplicantDetails = {
   passportNumber: string;
   passportExpiry: string;
   travelDate: string;
+  // "standard" | "premium" — kept as a plain string here (rather than
+  // importing ApplicationTier from payment-config) so lib/types.ts stays
+  // free of app-config dependencies.
+  applicationTier: string;
 };
 
 export type VisaApplication = {

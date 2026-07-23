@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/form-fields";
-import { VISA_TYPE_OPTIONS } from "@/lib/payment-config";
+import { APPLICATION_TYPE_OPTIONS, VISA_TYPE_OPTIONS } from "@/lib/payment-config";
 import type { ApplicantDetails } from "@/lib/types";
 
 export type ApplicantEntry = ApplicantDetails & { visaType: string };
@@ -19,6 +19,7 @@ export const emptyApplicant: ApplicantEntry = {
   passportExpiry: "",
   travelDate: "",
   visaType: "",
+  applicationTier: "",
 };
 
 export function ApplicantFormStep({
@@ -179,6 +180,25 @@ export function ApplicantFormStep({
               ))}
             </Select>
           </div>
+        </div>
+
+        <div>
+          <Label htmlFor="av-applicationTier">Application Type</Label>
+          <Select
+            id="av-applicationTier"
+            required
+            value={form.applicationTier}
+            onChange={(e) => patch({ applicationTier: e.target.value })}
+          >
+            <option value="" disabled>
+              Select application type
+            </option>
+            {APPLICATION_TYPE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-2">

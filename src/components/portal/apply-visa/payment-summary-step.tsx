@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { FileText, Loader2, UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fileToProofOfPayment } from "@/lib/file-to-data-url";
-import { VISA_ASSISTANCE_FEE_PER_APPLICANT } from "@/lib/payment-config";
+import { applicationTierLabel, getVisaFee, type ApplicationTier } from "@/lib/payment-config";
 import { formatPeso } from "@/lib/utils";
 import type { ApplicantEntry } from "@/components/portal/apply-visa/applicant-form-step";
 
@@ -35,9 +35,10 @@ export function PaymentSummaryStep({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
-  const visaTypes = Array.from(new Set(applicants.map((a) => a.visaType)));
-  const visaTypeLabel = visaTypes.length === 1 ? visaTypes[0] : "Multiple Visa Types";
-  const total = applicants.length * VISA_ASSISTANCE_FEE_PER_APPLICANT;
+  const fees = applicants.map((a) =>
+    getVisaFee(a.visaType, a.applicationTier as ApplicationTier)
+  );
+  const total = fees.reduce((sum, fee) => sum + fee, 0);
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
@@ -64,27 +65,41 @@ export function PaymentSummaryStep({
         Review your total and upload your proof of payment.
       </p>
 
-      <div className="mt-6 space-y-2 rounded-2xl border border-primary/10 bg-bg-light p-5 text-sm">
-        <div className="flex items-center justify-between">
-          <span className="text-ink/55">Visa Type</span>
-          <span className="font-medium text-primary-dark">{visaTypeLabel}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-ink/55">Number of Applicants</span>
-          <span className="font-medium text-primary-dark">{applicants.length}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-ink/55">Visa Assistance Fee</span>
-          <span className="font-medium text-primary-dark">
-            {formatPeso(VISA_ASSISTANCE_FEE_PER_APPLICANT)} &times; {applicants.length}
-          </span>
-        </div>
-        <div className="mt-2 flex items-center justify-between border-t border-primary/10 pt-3">
-          <span className="font-semibold text-primary-dark">Total Amount</span>
-          <span className="font-heading text-lg font-semibold text-primary-dark">
-            {formatPeso(total)}
-          </span>
-        </div>
+      <div className="mt-6 overflow-hidden rounded-2xl border border-primary/10">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-bg-light text-xs uppercase tracking-wide text-ink/50">
+            <tr>
+              <th className="px-4 py-2.5 font-medium">Name</th>
+              <th className="px-4 py-2.5 font-medium">Visa Type</th>
+              <th className="px-4 py-2.5 font-medium">Tier</th>
+              <th className="px-4 py-2.5 text-right font-medium">Fee</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-primary/10 bg-white">
+            {applicants.map((applicant, index) => (
+              <tr key={index}>
+                <td className="px-4 py-3 font-medium text-primary-dark">
+                  {applicant.firstName} {applicant.lastName}
+                </td>
+                <td className="px-4 py-3 text-ink/65">{applicant.visaType}</td>
+                <td className="px-4 py-3 text-ink/65">
+                  {applicant.applicationTier ? applicationTierLabel(applicant.applicationTier) : "-"}
+                </td>
+                <td className="px-4 py-3 text-right text-ink/65">{formatPeso(fees[index])}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-primary/10 bg-bg-light">
+              <td colSpan={3} className="px-4 py-3 text-right font-semibold text-primary-dark">
+                Total Amount
+              </td>
+              <td className="px-4 py-3 text-right font-heading text-base font-semibold text-primary-dark">
+                {formatPeso(total)}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
 
       <div className="mt-6">
