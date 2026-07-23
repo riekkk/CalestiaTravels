@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/form-fields";
 import { isFirebaseConfigured } from "@/lib/firebase";
 import { submitInquiry } from "@/lib/firestore";
+import { sendFormEmails } from "@/lib/email";
+import { getRecaptchaToken, isRecaptchaConfigured } from "@/lib/recaptcha";
 
 export function ContactForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
@@ -27,12 +29,28 @@ export function ContactForm() {
           "Online form submission isn't connected yet — please reach us by phone or email in the meantime."
         );
       }
-      await submitInquiry({
-        name: String(data.get("name") ?? ""),
-        email: String(data.get("email") ?? ""),
-        phone: String(data.get("phone") ?? ""),
-        message: String(data.get("message") ?? ""),
-      });
+      if (!isRecaptchaConfigured) {
+        throw new Error(
+          "Spam protection isn't configured yet — please reach us by phone or email in the meantime."
+        );
+      }
+      const name = String(data.get("name") ?? "");
+      const email = String(data.get("email") ?? "");
+      const phone = String(data.get("phone") ?? "");
+      const message = String(data.get("message") ?? "");
+
+      const recaptchaToken = await getRecaptchaToken("contact_form");
+      await submitInquiry({ name, email, phone, message }, recaptchaToken);
+
+      sendFormEmails({
+        formType: "Contact Inquiry",
+        clientName: name,
+        clientEmail: email,
+        clientPhone: phone,
+        details: message,
+        nextSteps: "Our team will review your message and get back to you shortly.",
+      }).catch((err) => console.error("EmailJS send failed:", err));
+
       setStatus("success");
       form.reset();
     } catch (err) {
@@ -89,6 +107,27 @@ export function ContactForm() {
         )}
         Send Message
       </Button>
+      <p className="text-xs text-ink/40">
+        This site is protected by reCAPTCHA and the Google{" "}
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Privacy Policy
+        </a>{" "}
+        and{" "}
+        <a
+          href="https://policies.google.com/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Terms of Service
+        </a>{" "}
+        apply.
+      </p>
     </form>
   );
 }

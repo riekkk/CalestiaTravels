@@ -75,6 +75,73 @@ export const visaTypes: VisaType[] = [
     ],
   },
   {
+    slug: "tourist-single-entry",
+    title: "Temporary Visitor Visa — Single Entry (Tourism)",
+    shortTitle: "Tourist Visa (Single Entry)",
+    summary:
+      "For first-time or occasional visitors traveling to Japan for tourism, leisure, or short trips.",
+    description:
+      "For first-time or occasional visitors traveling to Japan for tourism, leisure, or short trips. This visa allows a single entry into Japan.",
+    notes: [
+      "Validity: single entry — the visa may be used for one trip to Japan.",
+      "Duration: each stay in Japan may be up to 90 days.",
+    ],
+    requiredDocuments: [
+      { name: "Passport", detail: "Ensure your passport is self-signed." },
+      {
+        name: "Visa Application Form",
+        detail:
+          "With applicant's signature. If underage or with disability, a parent may sign on the applicant's behalf.",
+      },
+      {
+        name: "1x Photograph",
+        detail:
+          "Color photo taken within 6 months (4.5cm x 3.5cm, clear image, no background).",
+      },
+      { name: "1x Color Copy of Passport Bio Page", detail: "" },
+      { name: "1x Color Copy of used Japan Visa, if any", detail: "" },
+      {
+        name: "Birth Certificate",
+        detail:
+          "Issued by PSA within 1 year. Unnecessary if there is a used Japan visa on your passport. If not readable, submit a Local Civil Registrar copy; if late registration, submit a Baptismal Certificate and Form 137; if no PSA record exists, submit an LCR copy plus a PSA Negative Certificate.",
+      },
+      {
+        name: "Marriage Certificate",
+        detail:
+          "Issued by PSA within 1 year, for married applicants only. Unnecessary if there is a used Japan visa on your passport. Same alternate-document rules as the Birth Certificate.",
+      },
+      {
+        name: "Itinerary in Japan",
+        detail:
+          "Enter your schedule of entry and departure (with flight info if possible) and accommodation details. Booking is not necessary.",
+      },
+      {
+        name: "Applicant's Bank Certificate",
+        detail:
+          "Must show the Average Daily Balance for the last six months; if not indicated, a bank statement covering six months of transactions must be submitted instead.",
+      },
+      {
+        name: "Income Tax Return (ITR) Certificate",
+        detail:
+          "BIR Form 2316 signed by both employer and employee. Business owners must also submit proof of actual tax payment.",
+      },
+      {
+        name: "Applicant's Employment Certificate",
+        detail:
+          "Must indicate period of employment, salary, and position. Business owners submit a DTI Certificate of Business Name Registration and Mayor's Permit; students submit a School ID or Certificate of Enrollment.",
+      },
+      {
+        name: "Authorization Letter",
+        detail:
+          "Showing all names of passengers; signed by the head of the family, company, or tour company as applicable.",
+      },
+      {
+        name: "Company ID Card",
+        detail: "If the application is submitted by a designated company representative.",
+      },
+    ],
+  },
+  {
     slug: "visiting-relatives",
     title: "Visiting Relatives — Single Entry",
     shortTitle: "Visiting Relatives (Within 3rd Degree)",
@@ -327,6 +394,13 @@ export const visaTypes: VisaType[] = [
 
 export function getVisaTypeBySlug(slug: string) {
   return visaTypes.find((visa) => visa.slug === slug);
+}
+
+// Applications store the visa's full title (as chosen from the "New
+// Application" select), not its slug — this looks it back up for the
+// document checklist.
+export function getVisaTypeByTitle(title: string) {
+  return visaTypes.find((visa) => visa.title === title);
 }
 
 export const multipleEntryCategories = [

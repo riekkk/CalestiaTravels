@@ -7,7 +7,8 @@ import { Reveal } from "@/components/ui/reveal";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Calestia Travel & Tours' philosophy, mission, and vision — a family-backed Japan visa specialist built on precision and compliance.",
+    "Calestia Travel and Tours' philosophy, mission, and vision — a family-backed Japan visa specialist built on precision and compliance.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -34,7 +35,12 @@ export default function AboutPage() {
       <Section>
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
-            <PlaceholderImage label="Calestia Team" className="aspect-4/3 rounded-3xl" />
+            <PlaceholderImage
+              label="Calestia Team"
+              src="/images/about/team-photo.jpg"
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="aspect-4/3 rounded-3xl"
+            />
           </Reveal>
           <Reveal delay={100}>
             <div>

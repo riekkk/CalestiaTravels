@@ -5,6 +5,7 @@ import { Accordion, type AccordionItemData } from "@/components/ui/accordion";
 export const metadata: Metadata = {
   title: "FAQ",
   description: "Frequently asked questions about Calestia's Japan visa assistance and tour packages.",
+  alternates: { canonical: "/faq" },
 };
 
 const visaFaqs: AccordionItemData[] = [

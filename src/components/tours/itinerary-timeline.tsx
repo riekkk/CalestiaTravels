@@ -1,4 +1,4 @@
-import { CheckCircle2 } from "lucide-react";
+import { Bed, CheckCircle2, UtensilsCrossed } from "lucide-react";
 import type { ItineraryDay } from "@/lib/types";
 import { Reveal } from "@/components/ui/reveal";
 
@@ -20,7 +20,6 @@ export function ItineraryTimeline({ days }: { days: ItineraryDay[] }) {
                 <h3 className="mt-1 font-heading text-lg font-semibold text-primary-dark">
                   {day.title}
                 </h3>
-                <p className="text-sm text-ink/50">{day.subtitle}</p>
                 <ul className="mt-4 space-y-2">
                   {day.activities.map((activity) => (
                     <li
@@ -32,6 +31,20 @@ export function ItineraryTimeline({ days }: { days: ItineraryDay[] }) {
                     </li>
                   ))}
                 </ul>
+                {(day.meals || day.accommodation) && (
+                  <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-primary/10 pt-4 text-xs text-ink/55">
+                    {day.meals && (
+                      <span className="flex items-center gap-1.5">
+                        <UtensilsCrossed className="h-3.5 w-3.5 text-primary/50" /> {day.meals}
+                      </span>
+                    )}
+                    {day.accommodation && (
+                      <span className="flex items-center gap-1.5">
+                        <Bed className="h-3.5 w-3.5 text-primary/50" /> {day.accommodation}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </Reveal>

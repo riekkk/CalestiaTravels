@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { PortalSidebar } from "@/components/portal/sidebar";
+import { VerificationBanner } from "@/components/portal/verification-banner";
 
 export default function PortalAppLayout({
   children,
@@ -46,6 +47,7 @@ export default function PortalAppLayout({
             to enable real accounts.
           </div>
         )}
+        <VerificationBanner />
         <div className="container-page py-10">{children}</div>
       </main>
     </div>

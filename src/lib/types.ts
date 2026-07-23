@@ -7,8 +7,9 @@ export type TourQuickInfo = {
 export type ItineraryDay = {
   day: number;
   title: string;
-  subtitle: string;
   activities: string[];
+  meals?: string;
+  accommodation?: string;
 };
 
 export type TourFaq = {
@@ -16,32 +17,49 @@ export type TourFaq = {
   answer: string;
 };
 
-export type GalleryImage = {
-  slug: string;
-  label: string;
+export type TourPricing = {
+  budget?: number;
+  standard?: number;
+  luxury?: number;
 };
 
+export type TourAvailabilityStatus = "Available" | "Limited Slots" | "Sold Out";
+
+export type TourDateRange = {
+  start: string;
+  end: string;
+};
+
+// Admin publish gate — only "Active" packages are queried by the public
+// site. "Draft" is unpublished/WIP, "Archived" is retired.
+export type TourPublishStatus = "Active" | "Draft" | "Archived";
+
 export type TourPackage = {
+  id: string;
   slug: string;
-  status: "available" | "coming-soon";
+  publishStatus: TourPublishStatus;
   category: "domestic" | "international";
   title: string;
   destinationLabel: string;
-  eyebrow: string;
   tagline: string;
-  price: number;
-  priceUnit: string;
-  paxRange: string;
-  departure: string;
-  duration: string;
-  quickInfo: TourQuickInfo[];
-  highlights: string[];
   overview: string;
-  itinerary: ItineraryDay[];
+  highlights: string[];
   inclusions: string[];
   exclusions: string[];
-  gallery: GalleryImage[];
+  pricing: TourPricing;
+  durationDays: number;
+  durationNights: number;
+  maxGroupSize: number;
+  departure: string;
+  photos: string[];
+  coverPhotoIndex: number;
+  itinerary: ItineraryDay[];
+  availabilityStatus: TourAvailabilityStatus;
+  remainingSlots?: number;
+  dateRanges: TourDateRange[];
   faqs: TourFaq[];
+  createdAt: number;
+  updatedAt: number;
 };
 
 export type VisaDocument = {
@@ -78,21 +96,50 @@ export type ApplicationStatus =
   | "In Review"
   | "Needs Documents"
   | "Approved"
+  | "Ready for Pickup"
   | "Rejected";
+
+// The main linear stages shown in the client-facing progress tracker.
+// "Needs Documents" and "Rejected" are exception states layered on top of
+// this line rather than steps within it.
+export const APPLICATION_TRACKER_STAGES: ApplicationStatus[] = [
+  "Submitted",
+  "In Review",
+  "Approved",
+  "Ready for Pickup",
+];
+
+export type ApplicationStatusEvent = {
+  status: ApplicationStatus;
+  timestamp: number;
+};
+
+export type ApplicationAppointment = {
+  type: "Submission" | "Pickup";
+  date: string;
+  time?: string;
+  location?: string;
+  notes?: string;
+};
 
 export type VisaApplication = {
   id: string;
   userId: string;
+  userEmail?: string;
   visaType: string;
   status: ApplicationStatus;
   submittedAt: number;
   updatedAt: number;
   notes?: string;
+  statusHistory: ApplicationStatusEvent[];
+  appointment: ApplicationAppointment | null;
+  documentChecklist: Record<string, boolean>;
 };
 
 export type ClientDocument = {
   id: string;
   userId: string;
+  userEmail?: string;
   applicationId: string | null;
   fileName: string;
   storagePath: string;
@@ -105,6 +152,7 @@ export type BookingStatus = "Requested" | "Confirmed" | "Completed" | "Cancelled
 export type Booking = {
   id: string;
   userId: string;
+  userEmail?: string;
   packageSlug: string;
   packageName: string;
   travelDate: string;
@@ -116,6 +164,7 @@ export type Booking = {
 export type ClientNotification = {
   id: string;
   userId: string;
+  applicationId: string | null;
   message: string;
   read: boolean;
   createdAt: number;
@@ -127,5 +176,11 @@ export type ClientProfile = {
   email: string;
   phone?: string;
   address?: string;
+  isAdmin?: boolean;
+  agreedToTerms?: boolean;
+  agreedToPrivacy?: boolean;
+  termsVersion?: string;
+  privacyVersion?: string;
+  agreedAt?: number;
   createdAt: number;
 };

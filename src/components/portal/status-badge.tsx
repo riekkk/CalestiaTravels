@@ -6,6 +6,7 @@ const applicationTone: Record<ApplicationStatus, "primary" | "success" | "warnin
   "In Review": "warning",
   "Needs Documents": "warning",
   Approved: "success",
+  "Ready for Pickup": "success",
   Rejected: "danger",
 };
 

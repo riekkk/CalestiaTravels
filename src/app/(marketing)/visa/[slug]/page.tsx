@@ -19,7 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const visa = getVisaTypeBySlug(slug);
   if (!visa) return {};
-  return { title: visa.shortTitle, description: visa.summary };
+  return {
+    title: visa.shortTitle,
+    description: visa.summary,
+    alternates: { canonical: `/visa/${slug}` },
+  };
 }
 
 export default async function VisaTypeDetailPage({ params }: Props) {

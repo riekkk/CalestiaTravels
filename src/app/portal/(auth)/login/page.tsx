@@ -50,7 +50,12 @@ export default function LoginPage() {
           <Input id="email" name="email" type="email" required />
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link href="/portal/forgot-password" className="text-xs font-medium text-primary">
+              Forgot password?
+            </Link>
+          </div>
           <Input id="password" name="password" type="password" required />
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}

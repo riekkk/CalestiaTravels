@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Visa Assistance",
   description:
     "Calestia is a Japan visa specialist — explore visa types, requirements, application steps, and downloadable forms.",
+  alternates: { canonical: "/visa" },
 };
 
 const visaFaqs = [

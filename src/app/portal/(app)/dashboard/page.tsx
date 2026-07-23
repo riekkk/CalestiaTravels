@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const { notifications } = useNotifications(user?.uid);
 
   const openApplications = applications.filter(
-    (app) => app.status !== "Approved" && app.status !== "Rejected"
+    (app) => app.status !== "Ready for Pickup" && app.status !== "Rejected"
   ).length;
   const unreadNotifications = notifications.filter((n) => !n.read).length;
 

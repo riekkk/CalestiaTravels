@@ -6,7 +6,8 @@ import { testimonials } from "@/lib/data/testimonials";
 
 export const metadata: Metadata = {
   title: "Reviews",
-  description: "See what Calestia Travel & Tours clients say about their visa and travel experience.",
+  description: "See what Calestia Travel and Tours clients say about their visa and travel experience.",
+  alternates: { canonical: "/reviews" },
 };
 
 export default function ReviewsPage() {

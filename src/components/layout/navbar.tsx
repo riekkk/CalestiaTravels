@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, Plane, User, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
 import { ButtonLink } from "@/components/ui/button";
+import { BrandMark } from "@/components/layout/brand-mark";
 
 const links = [
   { href: "/", label: "Home" },
@@ -26,13 +27,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/90 backdrop-blur-md">
       <div className="container-page flex h-[4.5rem] items-center justify-between py-3">
-        <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white">
-            <Plane className="h-4 w-4" strokeWidth={2} />
-          </span>
-          <span className="font-heading text-lg font-semibold text-primary-dark">
-            Calestia
-          </span>
+        <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
+          <BrandMark size={44} />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">

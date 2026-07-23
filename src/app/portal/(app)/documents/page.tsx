@@ -25,7 +25,7 @@ export default function DocumentsPage() {
         <FileUpload
           onUpload={async (file) => {
             if (!user) return;
-            await uploadClientDocument(user.uid, file, null);
+            await uploadClientDocument(user.uid, user.email ?? "", file, null);
           }}
         />
       </div>

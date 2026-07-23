@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/form-fields";
 import { isFirebaseConfigured } from "@/lib/firebase";
 import { submitPackageBookingLead } from "@/lib/firestore";
+import { sendFormEmails } from "@/lib/email";
+import { getRecaptchaToken, isRecaptchaConfigured } from "@/lib/recaptcha";
 
 export function BookingForm({
   packageSlug,
@@ -33,16 +35,44 @@ export function BookingForm({
           "Online booking isn't connected yet — please call or email us to reserve your slot."
         );
       }
-      await submitPackageBookingLead({
-        name: String(data.get("name") ?? ""),
-        email: String(data.get("email") ?? ""),
-        phone: String(data.get("phone") ?? ""),
-        packageSlug,
-        packageName,
-        travelDate: String(data.get("travelDate") ?? ""),
-        pax: Number(data.get("pax") ?? 1),
-        message: String(data.get("message") ?? ""),
-      });
+      if (!isRecaptchaConfigured) {
+        throw new Error(
+          "Spam protection isn't configured yet — please call or email us to reserve your slot."
+        );
+      }
+      const name = String(data.get("name") ?? "");
+      const email = String(data.get("email") ?? "");
+      const phone = String(data.get("phone") ?? "");
+      const travelDate = String(data.get("travelDate") ?? "");
+      const pax = Number(data.get("pax") ?? 1);
+      const message = String(data.get("message") ?? "");
+
+      const recaptchaToken = await getRecaptchaToken("booking_form");
+      await submitPackageBookingLead(
+        {
+          name,
+          email,
+          phone,
+          packageSlug,
+          packageName,
+          travelDate,
+          pax,
+          message,
+        },
+        recaptchaToken
+      );
+
+      sendFormEmails({
+        formType: "Tour Booking Request",
+        clientName: name,
+        clientEmail: email,
+        clientPhone: phone,
+        details: `Package: ${packageName}\nPreferred Date: ${travelDate}\nPax: ${pax}${
+          message ? `\nMessage: ${message}` : ""
+        }`,
+        nextSteps: "Our team will contact you shortly to confirm your slot and payment details.",
+      }).catch((err) => console.error("EmailJS send failed:", err));
+
       setStatus("success");
       form.reset();
     } catch (err) {
@@ -101,6 +131,27 @@ export function BookingForm({
         )}
         Reserve Your Slot
       </Button>
+      <p className="text-xs text-white/40">
+        This site is protected by reCAPTCHA and the Google{" "}
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Privacy Policy
+        </a>{" "}
+        and{" "}
+        <a
+          href="https://policies.google.com/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Terms of Service
+        </a>{" "}
+        apply.
+      </p>
     </form>
   );
 }

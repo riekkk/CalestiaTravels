@@ -2,30 +2,32 @@ import type { Metadata } from "next";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { ContactForm } from "@/components/forms/contact-form";
+import { SITE_INFO } from "@/lib/site-info";
 
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Get in touch with Calestia Travel & Tours for visa assistance or tour package inquiries.",
+    "Get in touch with Calestia Travel and Tours for visa assistance or tour package inquiries.",
+  alternates: { canonical: "/contact" },
 };
 
 const contactDetails = [
   {
     icon: Phone,
     label: "Phone",
-    value: "0960 304 1887",
-    href: "tel:+639603041887",
+    value: SITE_INFO.phone,
+    href: SITE_INFO.phoneHref,
   },
   {
     icon: Mail,
     label: "Email",
-    value: "Calestia.assistance@gmail.com",
-    href: "mailto:Calestia.assistance@gmail.com",
+    value: SITE_INFO.email,
+    href: SITE_INFO.emailHref,
   },
   {
     icon: MapPin,
     label: "Location",
-    value: "General Trias, Cavite, Philippines",
+    value: SITE_INFO.address,
   },
 ];
 
@@ -63,13 +65,18 @@ export default function ContactPage() {
                 </div>
               </div>
             ))}
-            <div className="rounded-2xl border border-primary/10 bg-primary-dark p-5 text-white">
+            <a
+              href={SITE_INFO.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-2xl border border-primary/10 bg-primary-dark p-5 text-white transition-opacity hover:opacity-90"
+            >
               <p className="text-xs uppercase tracking-wide text-white/60">Facebook</p>
-              <p className="mt-1 text-sm font-medium">Calestia Travel and Tours Services</p>
+              <p className="mt-1 text-sm font-medium">{SITE_INFO.facebookName}</p>
               <p className="mt-2 text-xs text-white/60">
-                Search us on Facebook for updates and announcements.
+                Follow us on Facebook for updates and announcements.
               </p>
-            </div>
+            </a>
           </div>
         </div>
 

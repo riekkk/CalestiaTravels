@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useState, type DragEvent } from "react";
-import { Loader2, UploadCloud } from "lucide-react";
+import { Clock, Loader2, UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DOCUMENT_UPLOADS_ENABLED } from "@/lib/feature-flags";
 
 export function FileUpload({
   onUpload,
@@ -31,6 +32,32 @@ export function FileUpload({
     e.preventDefault();
     setDragging(false);
     handleFile(e.dataTransfer.files?.[0]);
+  }
+
+  if (!DOCUMENT_UPLOADS_ENABLED) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/15 bg-bg-light px-6 py-10 text-center">
+        <Clock className="h-6 w-6 text-primary/50" strokeWidth={1.5} />
+        <p className="text-sm font-medium text-primary-dark/70">
+          Document Uploads — Coming Soon
+        </p>
+        <p className="text-xs text-ink/45">
+          We&apos;re finishing setup on secure file storage. In the meantime,
+          you can email documents to{" "}
+          <a href="mailto:Calestia.assistance@gmail.com" className="underline">
+            Calestia.assistance@gmail.com
+          </a>
+          .
+        </p>
+        <button
+          type="button"
+          disabled
+          className="mt-2 cursor-not-allowed rounded-full bg-primary/10 px-4 py-2 text-xs font-medium text-primary/50"
+        >
+          Attach File
+        </button>
+      </div>
+    );
   }
 
   return (

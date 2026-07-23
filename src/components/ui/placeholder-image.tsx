@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -13,26 +17,11 @@ function hashLabel(label: string) {
   return hash;
 }
 
-export function PlaceholderImage({
-  label,
-  className,
-  fill = false,
-}: {
-  label: string;
-  className?: string;
-  fill?: boolean;
-}) {
+function GradientFallback({ label }: { label: string }) {
   const gradient = gradients[hashLabel(label)];
 
   return (
-    <div
-      className={cn(
-        "relative flex items-center justify-center overflow-hidden bg-gradient-to-br text-white",
-        gradient,
-        fill ? "absolute inset-0" : "aspect-4/3 w-full",
-        className
-      )}
-    >
+    <div className={cn("absolute inset-0 flex items-center justify-center bg-gradient-to-br text-white", gradient)}>
       <div
         className="absolute inset-0 opacity-20"
         style={{
@@ -46,6 +35,46 @@ export function PlaceholderImage({
           {label}
         </span>
       </div>
+    </div>
+  );
+}
+
+export function PlaceholderImage({
+  label,
+  src,
+  className,
+  fill = false,
+  sizes = "(min-width: 1024px) 33vw, 100vw",
+}: {
+  label: string;
+  src?: string;
+  className?: string;
+  fill?: boolean;
+  sizes?: string;
+}) {
+  const [errored, setErrored] = useState(false);
+  const showImage = Boolean(src) && !errored;
+
+  return (
+    <div
+      className={cn(
+        "overflow-hidden",
+        fill ? "absolute inset-0" : "relative aspect-4/3 w-full",
+        className
+      )}
+    >
+      {showImage ? (
+        <Image
+          src={src as string}
+          alt={label}
+          fill
+          sizes={sizes}
+          className="object-cover"
+          onError={() => setErrored(true)}
+        />
+      ) : (
+        <GradientFallback label={label} />
+      )}
     </div>
   );
 }

@@ -1,10 +1,16 @@
+"use client";
+
 import { Section, SectionHeading } from "@/components/ui/section";
 import { TourCard } from "@/components/tours/tour-card";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
-import { tourPackages } from "@/lib/data/tours";
+import { useActiveTourPackages } from "@/lib/tour-hooks";
 
 export function FeaturedTours() {
+  const { tours, loading } = useActiveTourPackages();
+
+  if (!loading && tours.length === 0) return null;
+
   return (
     <Section>
       <SectionHeading
@@ -14,8 +20,8 @@ export function FeaturedTours() {
       />
 
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {tourPackages.map((tour, index) => (
-          <Reveal key={tour.slug} delay={index * 80}>
+        {tours.slice(0, 6).map((tour, index) => (
+          <Reveal key={tour.id} delay={index * 80}>
             <TourCard tour={tour} />
           </Reveal>
         ))}

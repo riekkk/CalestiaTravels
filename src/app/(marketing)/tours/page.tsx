@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Globe2, MapPin } from "lucide-react";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { TourCard } from "@/components/tours/tour-card";
-import { Reveal } from "@/components/ui/reveal";
-import { tourPackages } from "@/lib/data/tours";
+import { ToursListingClient } from "@/components/tours/tours-listing-client";
 
 export const metadata: Metadata = {
   title: "Tour Packages",
   description: "Browse Calestia's domestic tour packages, with international tours coming soon.",
+  alternates: { canonical: "/tours" },
 };
 
 export default function ToursPage() {
@@ -55,13 +54,7 @@ export default function ToursPage() {
       </Section>
 
       <Section>
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {tourPackages.map((tour, index) => (
-            <Reveal key={tour.slug} delay={index * 80}>
-              <TourCard tour={tour} />
-            </Reveal>
-          ))}
-        </div>
+        <ToursListingClient />
       </Section>
     </>
   );

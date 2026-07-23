@@ -11,38 +11,68 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
     match /users/{userId} {
-      allow read, update: if isOwner(userId);
+      allow read, update: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
     }
 
     match /applications/{applicationId} {
-      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Clients can read their own application (tracker, appointment,
+      // checklist, notes) but only admins can write to it after creation —
+      // status, appointment, and checklist are strictly admin-driven.
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAdmin();
     }
 
     match /documents/{documentId} {
-      allow read, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     match /bookings/{bookingId} {
-      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin();
     }
 
     match /notifications/{notificationId} {
-      allow read, update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Admins can also read a client's notifications, to show the
+      // per-application activity feed on the admin side.
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isAdmin();
     }
 
-    // Public lead-capture forms (Contact page, package booking inquiries) —
-    // anyone may create, nobody can read/list from the client.
+    match /tourPackages/{packageId} {
+      // Publicly readable (the marketing site browses these with no auth) —
+      // the app only *queries* publishStatus == "Active" ones for public
+      // pages, so Draft/Archived stay effectively unlisted without needing
+      // per-document rule complexity. Only admins can write.
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Public lead-capture forms (Contact page, package booking inquiries).
+    // Writes go exclusively through the /api/public-submit server route,
+    // which verifies reCAPTCHA and writes via the Firebase Admin SDK
+    // (bypasses these rules entirely) — so direct client writes are denied
+    // here to stop bots from writing straight to Firestore.
     match /inquiries/{inquiryId} {
-      allow create: if true;
+      allow create: if false;
+      allow read: if isAdmin();
     }
 
     match /bookingLeads/{leadId} {
-      allow create: if true;
+      allow create: if false;
+      allow read: if isAdmin();
     }
   }
 }

@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Mail, MapPin, Phone, Plane } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
+import { SITE_INFO } from "@/lib/site-info";
+import { BrandMark } from "@/components/layout/brand-mark";
 
 function FacebookIcon() {
   return (
@@ -33,11 +35,8 @@ export function Footer() {
     <footer className="bg-primary-dark text-white">
       <div className="container-page grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">
-              <Plane className="h-4 w-4" strokeWidth={2} />
-            </span>
-            <span className="font-heading text-lg font-semibold">Calestia</span>
+          <Link href="/" className="inline-flex items-center">
+            <BrandMark size={48} onDark />
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
             Where every Japan journey begins. Visa assistance and travel
@@ -82,23 +81,30 @@ export function Footer() {
           <ul className="space-y-3 text-sm text-white/70">
             <li className="flex items-center gap-2.5">
               <Phone className="h-4 w-4 shrink-0 text-white/40" />
-              <a href="tel:+639603041887" className="hover:text-white">
-                0960 304 1887
+              <a href={SITE_INFO.phoneHref} className="hover:text-white">
+                {SITE_INFO.phone}
               </a>
             </li>
             <li className="flex items-center gap-2.5">
               <Mail className="h-4 w-4 shrink-0 text-white/40" />
-              <a href="mailto:Calestia.assistance@gmail.com" className="hover:text-white">
-                Calestia.assistance@gmail.com
+              <a href={SITE_INFO.emailHref} className="hover:text-white">
+                {SITE_INFO.email}
               </a>
             </li>
             <li className="flex items-center gap-2.5">
               <MapPin className="h-4 w-4 shrink-0 text-white/40" />
-              <span>General Trias, Cavite, Philippines</span>
+              <span>{SITE_INFO.address}</span>
             </li>
             <li className="flex items-center gap-2.5">
               <FacebookIcon />
-              <span>Calestia Travel and Tours Services</span>
+              <a
+                href={SITE_INFO.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white"
+              >
+                {SITE_INFO.facebookName}
+              </a>
             </li>
           </ul>
         </div>
@@ -107,6 +113,14 @@ export function Footer() {
       <div className="border-t border-white/10 py-6">
         <div className="container-page flex flex-col items-center justify-between gap-3 text-xs text-white/50 sm:flex-row">
           <p>© {new Date().getFullYear()} Calestia Travel & Tours. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/terms" className="hover:text-white">
+              Terms of Service
+            </Link>
+            <Link href="/privacy" className="hover:text-white">
+              Privacy Policy
+            </Link>
+          </div>
           <p>Precision Architecture in Travel Governance.</p>
         </div>
       </div>

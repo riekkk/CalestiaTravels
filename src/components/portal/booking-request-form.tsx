@@ -4,15 +4,18 @@ import { useState, type FormEvent } from "react";
 import { Loader2, Plus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { createBookingRequest } from "@/lib/firestore";
-import { getAvailableTours } from "@/lib/data/tours";
+import { useActiveTourPackages } from "@/lib/tour-hooks";
+import { tourHasFullContent } from "@/lib/tour-utils";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/form-fields";
+import { sendFormEmails } from "@/lib/email";
 
 export function BookingRequestForm({ onDone }: { onDone?: () => void }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const tours = getAvailableTours();
+  const { tours: allTours } = useActiveTourPackages();
+  const tours = allTours.filter(tourHasFullContent);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,14 +30,28 @@ export function BookingRequestForm({ onDone }: { onDone?: () => void }) {
       setLoading(false);
       return;
     }
+    const travelDate = String(data.get("travelDate"));
+    const pax = Number(data.get("pax"));
+
     try {
       await createBookingRequest(
         user.uid,
+        user.email ?? "",
         tour.slug,
         tour.title,
-        String(data.get("travelDate")),
-        Number(data.get("pax"))
+        travelDate,
+        pax
       );
+
+      sendFormEmails({
+        formType: "Tour Booking Request",
+        clientName: profile?.name || user.displayName || "Client Portal user",
+        clientEmail: user.email ?? "",
+        clientPhone: profile?.phone ?? "",
+        details: `Package: ${tour.title}\nPreferred Date: ${travelDate}\nPax: ${pax}`,
+        nextSteps: "Our team will contact you shortly to confirm your slot and payment details.",
+      }).catch((err) => console.error("EmailJS send failed:", err));
+
       e.currentTarget.reset();
       onDone?.();
     } catch (err) {

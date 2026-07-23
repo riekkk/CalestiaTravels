@@ -6,6 +6,7 @@ import { Section } from "@/components/ui/section";
 export const metadata: Metadata = {
   title: "International Tours",
   description: "Calestia's international tour packages are coming soon.",
+  alternates: { canonical: "/tours/international" },
 };
 
 export default function InternationalToursPage() {

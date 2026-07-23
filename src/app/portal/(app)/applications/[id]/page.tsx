@@ -2,15 +2,19 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, FileText } from "lucide-react";
+import { ArrowLeft, Download, FileText } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { useApplications, useDocuments } from "@/lib/portal-hooks";
+import { useApplications, useDocuments, useNotifications } from "@/lib/portal-hooks";
 import { uploadClientDocument } from "@/lib/firestore";
+import { getVisaTypeByTitle } from "@/lib/data/visa-types";
+import { DOCUMENT_UPLOADS_ENABLED } from "@/lib/feature-flags";
 import { ApplicationStatusBadge } from "@/components/portal/status-badge";
+import { ApplicationTimeline } from "@/components/portal/application-timeline";
+import { AppointmentCard } from "@/components/portal/appointment-card";
+import { DocumentChecklist } from "@/components/portal/document-checklist";
+import { ApplicationActivityFeed } from "@/components/portal/application-activity-feed";
 import { FileUpload } from "@/components/portal/file-upload";
 import { formatDate } from "@/lib/utils";
-
-const timelineSteps = ["Submitted", "In Review", "Approved"] as const;
 
 export default function ApplicationDetailPage({
   params,
@@ -21,9 +25,12 @@ export default function ApplicationDetailPage({
   const { user } = useAuth();
   const { applications } = useApplications(user?.uid);
   const { documents } = useDocuments(user?.uid);
+  const { notifications } = useNotifications(user?.uid);
 
   const application = applications.find((app) => app.id === id);
   const appDocuments = documents.filter((doc) => doc.applicationId === id);
+  const appActivity = notifications.filter((note) => note.applicationId === id);
+  const visaType = application ? getVisaTypeByTitle(application.visaType) : undefined;
 
   if (!application) {
     return (
@@ -37,11 +44,6 @@ export default function ApplicationDetailPage({
       </div>
     );
   }
-
-  const currentStepIndex =
-    application.status === "Rejected" || application.status === "Needs Documents"
-      ? 1
-      : timelineSteps.indexOf(application.status as (typeof timelineSteps)[number]);
 
   return (
     <div>
@@ -61,66 +63,92 @@ export default function ApplicationDetailPage({
         <ApplicationStatusBadge status={application.status} />
       </div>
 
-      <div className="mt-8 rounded-2xl border border-primary/10 bg-white p-6">
-        <div className="flex items-center justify-between">
-          {timelineSteps.map((step, index) => (
-            <div key={step} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center gap-2">
-                <span
-                  className={
-                    index <= currentStepIndex
-                      ? "flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white"
-                      : "flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary/40"
-                  }
-                >
-                  <CheckCircle2 className="h-4 w-4" />
-                </span>
-                <span className="text-xs font-medium text-ink/60">{step}</span>
-              </div>
-              {index < timelineSteps.length - 1 && (
-                <div
-                  className={
-                    index < currentStepIndex
-                      ? "mx-2 h-0.5 flex-1 bg-primary"
-                      : "mx-2 h-0.5 flex-1 bg-primary/10"
-                  }
-                />
-              )}
-            </div>
-          ))}
-        </div>
-        {application.notes && (
-          <p className="mt-6 rounded-xl bg-bg-light p-4 text-sm text-ink/70">
-            <span className="font-medium text-primary-dark">Notes: </span>
-            {application.notes}
-          </p>
-        )}
+      <div className="mt-8">
+        <ApplicationTimeline application={application} />
       </div>
 
-      <div className="mt-8">
-        <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">
-          Documents
-        </h2>
-        {appDocuments.length > 0 && (
-          <div className="mb-4 space-y-2">
-            {appDocuments.map((doc) => (
-              <div
-                key={doc.id}
-                className="flex items-center gap-3 rounded-xl border border-primary/10 bg-white p-4"
-              >
-                <FileText className="h-4 w-4 text-primary" />
-                <span className="flex-1 truncate text-sm text-ink/75">{doc.fileName}</span>
-                <span className="text-xs text-ink/40">{formatDate(doc.uploadedAt)}</span>
-              </div>
-            ))}
+      <div className="mt-10 grid gap-8 lg:grid-cols-3">
+        <div className="space-y-10 lg:col-span-2">
+          <div>
+            <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">
+              Document Checklist
+            </h2>
+            {visaType ? (
+              <DocumentChecklist
+                requiredDocuments={visaType.requiredDocuments}
+                checklist={application.documentChecklist}
+              />
+            ) : (
+              <p className="text-sm text-ink/50">
+                We couldn&apos;t match this application to a visa checklist.
+              </p>
+            )}
           </div>
-        )}
-        <FileUpload
-          onUpload={async (file) => {
-            if (!user) return;
-            await uploadClientDocument(user.uid, file, application.id);
-          }}
-        />
+
+          <div>
+            <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">
+              Downloadable Documents
+            </h2>
+            {DOCUMENT_UPLOADS_ENABLED ? (
+              <p className="text-sm text-ink/50">No shared documents yet.</p>
+            ) : (
+              <div className="flex items-center gap-3 rounded-2xl border border-dashed border-primary/20 bg-white p-5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary/50">
+                  <Download className="h-5 w-5" strokeWidth={1.75} />
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-primary-dark/70">Coming Soon</p>
+                  <p className="text-xs text-ink/50">
+                    Once your visa or shared documents are ready, you&apos;ll be able to
+                    download them here.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">
+              Uploaded Documents
+            </h2>
+            {appDocuments.length > 0 && (
+              <div className="mb-4 space-y-2">
+                {appDocuments.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center gap-3 rounded-xl border border-primary/10 bg-white p-4"
+                  >
+                    <FileText className="h-4 w-4 text-primary" />
+                    <span className="flex-1 truncate text-sm text-ink/75">{doc.fileName}</span>
+                    <span className="text-xs text-ink/40">{formatDate(doc.uploadedAt)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <FileUpload
+              onUpload={async (file) => {
+                if (!user) return;
+                await uploadClientDocument(user.uid, user.email ?? "", file, application.id);
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          <div>
+            <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">
+              Appointment
+            </h2>
+            <AppointmentCard appointment={application.appointment} />
+          </div>
+
+          <div>
+            <h2 className="mb-4 font-heading text-lg font-semibold text-primary-dark">
+              Activity
+            </h2>
+            <ApplicationActivityFeed notifications={appActivity} />
+          </div>
+        </div>
       </div>
     </div>
   );

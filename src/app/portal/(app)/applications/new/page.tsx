@@ -8,9 +8,10 @@ import { createApplication } from "@/lib/firestore";
 import { visaTypes } from "@/lib/data/visa-types";
 import { Button } from "@/components/ui/button";
 import { Label, Select, Textarea } from "@/components/ui/form-fields";
+import { sendFormEmails } from "@/lib/email";
 
 export default function NewApplicationPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,12 +22,22 @@ export default function NewApplicationPage() {
     setLoading(true);
     setError("");
     const data = new FormData(e.currentTarget);
+    const visaType = String(data.get("visaType"));
+    const notes = String(data.get("notes") ?? "");
+
     try {
-      await createApplication(
-        user.uid,
-        String(data.get("visaType")),
-        String(data.get("notes") ?? "")
-      );
+      await createApplication(user.uid, user.email ?? "", visaType, notes);
+
+      sendFormEmails({
+        formType: "Visa Application",
+        clientName: profile?.name || user.displayName || "Client Portal user",
+        clientEmail: user.email ?? "",
+        clientPhone: profile?.phone ?? "",
+        details: `Visa Type: ${visaType}${notes ? `\nNotes: ${notes}` : ""}`,
+        nextSteps:
+          "We'll review your documents and update your application status within 5–7 working days.",
+      }).catch((err) => console.error("EmailJS send failed:", err));
+
       router.push("/portal/applications");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to submit application.");
