@@ -8,9 +8,20 @@ import { cn } from "@/lib/utils";
 const fieldBase =
   "w-full rounded-xl border border-primary/15 bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/15";
 
-export function Label({ children, htmlFor }: { children: string; htmlFor?: string }) {
+export function Label({
+  children,
+  htmlFor,
+  className,
+}: {
+  children: string;
+  htmlFor?: string;
+  className?: string;
+}) {
   return (
-    <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-primary-dark">
+    <label
+      htmlFor={htmlFor}
+      className={cn("mb-1.5 block text-sm font-medium", className ?? "text-primary-dark")}
+    >
       {children}
     </label>
   );

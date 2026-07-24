@@ -95,31 +95,31 @@ export function BookingForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="booking-name">Full Name</Label>
+        <Label htmlFor="booking-name" className="text-white">Full Name</Label>
         <Input id="booking-name" name="name" required placeholder="Juan Dela Cruz" />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="booking-email">Email</Label>
+          <Label htmlFor="booking-email" className="text-white">Email</Label>
           <Input id="booking-email" name="email" type="email" required />
         </div>
         <div>
-          <Label htmlFor="booking-phone">Phone</Label>
+          <Label htmlFor="booking-phone" className="text-white">Phone</Label>
           <Input id="booking-phone" name="phone" required />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="booking-date">Preferred Date</Label>
+          <Label htmlFor="booking-date" className="text-white">Preferred Date</Label>
           <Input id="booking-date" name="travelDate" type="date" required />
         </div>
         <div>
-          <Label htmlFor="booking-pax">Number of Pax</Label>
+          <Label htmlFor="booking-pax" className="text-white">Number of Pax</Label>
           <Input id="booking-pax" name="pax" type="number" min={1} defaultValue={1} required />
         </div>
       </div>
       <div>
-        <Label htmlFor="booking-message">Message (optional)</Label>
+        <Label htmlFor="booking-message" className="text-white">Message (optional)</Label>
         <Textarea id="booking-message" name="message" rows={3} />
       </div>
       {status === "error" && <p className="text-sm text-red-200">{error}</p>}
